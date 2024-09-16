@@ -1,0 +1,42 @@
+#API USER
+
+ROLE:
+    Get: .../api/roles/ => Get all roles
+    Post: .../api/roles/ => Create role with body: 
+        {"name":role}
+    Put, Patch: .../api/roles/{id}/ => Update role with body: 
+        {"name":role}
+
+
+ACCOUNT:
+    Get: .../api/accounts/ => Get all accounts
+    Post: .../api/accounts/ => Create account with body: 
+
+        {
+        "name": "Binh Nguyen",
+        "password": "160424",
+        "phone": "123456789",
+        "email": "binhnx286@gmail.com",
+        "address": "hcm",
+        "status": true,
+        "role": 1  
+        }
+
+    Put: .../api/accounts//api/accounts/{id}/ => Update all fields account with body:
+         {
+        "name": "Binh Nguyen",
+        "password": "160424",
+        "phone": "123456789",
+        "email": "binhnx286@gmail.com",
+        "address": "hcm",
+        "status": true,
+        "role": 1  
+        }
+
+    
+    Patch: .../api/accounts//api/accounts/{id}/ => Update one or more fields account with body:
+         {
+        "name": "Binh Nguyen",
+        "password": "160424",
+        "phone": "123456789"
+        }
