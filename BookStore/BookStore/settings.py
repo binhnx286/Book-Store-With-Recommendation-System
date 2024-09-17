@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-f=d^)bi3zzju(@r8o8dw4_jt75zkm!qf(z@ka98w(jmv-xor!^
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['storyspace.azurewebsites.net','127.0.0.1']
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
