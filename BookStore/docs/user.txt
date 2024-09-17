@@ -1,16 +1,16 @@
 #API USER
 
 ROLE:
-    Get: .../api/roles/ => Get all roles
-    Post: .../api/roles/ => Create role with body: 
+    Get: https://storyspace.azurewebsites.net//api/roles/ => Get all roles
+    Post: https://storyspace.azurewebsites.net//api/roles/ => Create role with body: 
         {"name":role}
-    Put, Patch: .../api/roles/{id}/ => Update role with body: 
+    Put, Patch: https://storyspace.azurewebsites.net//api/roles/{id}/ => Update role with body: 
         {"name":role}
 
 
 ACCOUNT:
-    Get: .../api/accounts/ => Get all accounts
-    Post: .../api/accounts/ => Create account with body: 
+    Get: https://storyspace.azurewebsites.net//api/accounts/ => Get all accounts
+    Post: https://storyspace.azurewebsites.net//api/accounts/ => Create account with body: 
 
         {
         "name": "Binh Nguyen",
@@ -22,7 +22,7 @@ ACCOUNT:
         "role": 1  
         }
 
-    Put: .../api/accounts//api/accounts/{id}/ => Update all fields account with body:
+    Put: https://storyspace.azurewebsites.net//api/accounts//api/accounts/{id}/ => Update all fields account with body:
          {
         "name": "Binh Nguyen",
         "password": "160424",
@@ -34,7 +34,7 @@ ACCOUNT:
         }
 
     
-    Patch: .../api/accounts//api/accounts/{id}/ => Update one or more fields account with body:
+    Patch: https://storyspace.azurewebsites.net//api/accounts//api/accounts/{id}/ => Update one or more fields account with body:
          {
         "name": "Binh Nguyen",
         "password": "160424",
