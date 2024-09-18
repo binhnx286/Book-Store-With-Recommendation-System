@@ -106,6 +106,20 @@ DATABASES = {
 }
 
 
+#Email 
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'binh.nguyen280697@hcmut.edu.vn'  # Thay bằng địa chỉ email của bạn
+EMAIL_HOST_PASSWORD = 'ltgc lxtz cjco dfhc'  # Thay bằng mật khẩu ứng dụng
+DEFAULT_FROM_EMAIL = 'binh.nguyen280697@hcmut.edu.vn'  # Thay bằng địa chỉ email của bạn
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
