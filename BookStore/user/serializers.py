@@ -3,7 +3,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from .models import Account, Role
-from .utils import hash_password
+from .utils import hash_password, check_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -57,6 +59,19 @@ class AccountSerializer(serializers.ModelSerializer):
         return instance
 
 
+class TokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, account):
+        token = super().get_token(account)
+        # Add custom claims
+        token['email'] = account.email
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['email'] = self.user.email
+        return data
+    
 class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
