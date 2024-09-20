@@ -28,7 +28,6 @@ class Account(models.Model):
     class Meta:
         db_table = "account"
 
-
 class UserToken(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     refresh_token = models.TextField()

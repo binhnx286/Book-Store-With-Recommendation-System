@@ -7,8 +7,7 @@ from rest_framework.response import Response
 from .utils import check_password
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .permissions import IsAdminUser
- 
+
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -18,8 +17,8 @@ class AccountViewSet(viewsets.ModelViewSet):
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [IsAdminUser]
-    
+   
+   
 
 class AuthToken(APIView):
     def post(self, request, *args, **kwargs):

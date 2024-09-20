@@ -63,7 +63,8 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, account):
         token = super().get_token(account)
-        # Add custom claims
+        # Thêm các thông tin khác như user_id hoặc email
+        token['user_id'] = account.id
         token['email'] = account.email
         return token
 
