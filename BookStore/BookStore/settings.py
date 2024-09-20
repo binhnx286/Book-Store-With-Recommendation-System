@@ -86,26 +86,26 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bookstore',  
-        'USER': 'root',      
-        'PASSWORD': '160424',  
-        'HOST': 'localhost',            
-        'PORT': '3306',                 
-    }
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'storyspace-database',  
-#         'USER': 'vqpxgsfvsq',      
-#         'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
-#         'HOST': 'storyspace-server.mysql.database.azure.com',  # Cập nhật với hostname của máy chủ MySQL
+#         'NAME': 'bookstore',  
+#         'USER': 'root',      
+#         'PASSWORD': '160424',  
+#         'HOST': 'localhost',            
 #         'PORT': '3306',                 
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'storyspace-database',  
+        'USER': 'vqpxgsfvsq',      
+        'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
+        'HOST': 'storyspace-server.mysql.database.azure.com',  # Cập nhật với hostname của máy chủ MySQL
+        'PORT': '3306',                 
+    }
+}
 
 
 #Email 
