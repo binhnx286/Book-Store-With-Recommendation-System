@@ -86,26 +86,26 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'bookstore',  
-#         'USER': 'root',      
-#         'PASSWORD': '160424',  
-#         'HOST': 'localhost',            
-#         'PORT': '3306',                 
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storyspace-database',  
-        'USER': 'vqpxgsfvsq',      
-        'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
-        'HOST': 'storyspace-server.mysql.database.azure.com',  # Cập nhật với hostname của máy chủ MySQL
+        'NAME': 'bookstore',  
+        'USER': 'root',      
+        'PASSWORD': '160424',  
+        'HOST': 'localhost',            
         'PORT': '3306',                 
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'storyspace-database',  
+#         'USER': 'vqpxgsfvsq',      
+#         'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
+#         'HOST': 'storyspace-server.mysql.database.azure.com',  # Cập nhật với hostname của máy chủ MySQL
+#         'PORT': '3306',                 
+#     }
+# }
 
 
 #Email 
@@ -133,8 +133,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -148,7 +148,7 @@ SIMPLE_JWT = {
 }
 
 
-# AUTH_USER_MODEL = 'user.Account'
+AUTH_USER_MODEL = 'user.Account'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

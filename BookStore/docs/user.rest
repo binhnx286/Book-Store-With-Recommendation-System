@@ -1,0 +1,20 @@
+#Login
+# POST http://127.0.0.1:8000/api/user/login/
+# Content-Type: application/json
+
+#     {
+#     "email": "n.x.binh280697@gmail.com",
+#     "password": "160424"
+# }
+
+
+GET http://localhost:8000/api/user/roles/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI3MzM2MDk5LCJpYXQiOjE3MjcyNDk1NzUsImp0aSI6IjkyMzhiODQ5YjNmNzRmYjQ5MWFlYjI1ZjY3ZjZiNjRkIiwidXNlcl9pZCI6M30.K7T8annBE9o_yH7w5XX8C1pN8ZZ6isYucaAUOOPxb-Y
+
+# POST http://127.0.0.1:8000/api/user/login/refresh/
+# Content-Type: application/json
+
+#     {
+#     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyODExMzU3NSwiaWF0IjoxNzI3MjQ5NTc1LCJqdGkiOiIxNTNlN2NmYjM2N2U0MzRlYWM2MThmMWFlNTMyNmQ4MiIsInVzZXJfaWQiOjN9.A-B-MPxfBmQ-uDaCuPu6PSItkS-zdv1iXbTC0YCptro"
+   
+# }
