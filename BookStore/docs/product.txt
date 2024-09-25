@@ -1,0 +1,45 @@
+Product:
+GET: https://storyspace.azurewebsites.net//api/book/products/
+=> Lấy danh sách tất cả các sản phẩm.
+
+POST: https://storyspace.azurewebsites.net//api/book/products/
+=> Tạo sản phẩm mới với body:
+
+json
+Copy code
+{
+  "name": "Laptop",
+  "description": "Laptop mới nhất",
+  "image": "image_url.jpg",
+  "quantity": 10,
+  "price_origin": "1000",
+  "new_price": "900",
+  "viewed": 0,
+  "sub_category": 1,
+  "brand": 1
+}
+PUT: https://storyspace.azurewebsites.net//api/book/products/{id}/
+=> Cập nhật toàn bộ thông tin sản phẩm với body:
+
+json
+Copy code
+{
+  "name": "Laptop",
+  "description": "Laptop update",
+  "image": "image_update_url.jpg",
+  "quantity": 15,
+  "price_origin": "1000",
+  "new_price": "850",
+  "viewed": 10,
+  "sub_category": 2,
+  "brand": 1
+}
+PATCH: https://storyspace.azurewebsites.net//api/book/products/{id}/
+=> Cập nhật một hoặc nhiều trường sản phẩm với body:
+
+json
+Copy code
+{
+  "name": "Laptop Update",
+  "quantity": 20
+}

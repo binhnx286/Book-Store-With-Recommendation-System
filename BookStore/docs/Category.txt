@@ -1,0 +1,58 @@
+Category:
+GET: https://storyspace.azurewebsites.net//api/book/categories/
+=> Lấy danh sách tất cả các danh mục.
+
+POST: https://storyspace.azurewebsites.net//api/book/categories/
+=> Tạo danh mục mới với body:
+
+json
+Copy code
+{
+  "name": "Electronics"
+}
+PUT: https://storyspace.azurewebsites.net//api/book/categories/{id}/
+=> Cập nhật toàn bộ thông tin danh mục với body:
+
+json
+Copy code
+{
+  "name": "Electronic Devices"
+}
+PATCH: https://storyspace.azurewebsites.net//api/book/categories/{id}/
+=> Cập nhật một hoặc nhiều trường danh mục với body:
+
+json
+Copy code
+{
+  "name": "Electronics Update"
+}
+SubCategory:
+GET: https://storyspace.azurewebsites.net//api/book/subcategories/
+=> Lấy danh sách tất cả các danh mục con.
+
+POST: https://storyspace.azurewebsites.net//api/book/subcategories/
+=> Tạo danh mục con mới với body:
+
+json
+Copy code
+{
+  "name": "Laptops",
+  "category": 1
+}
+PUT: https://storyspace.azurewebsites.net//api/book/subcategories/{id}/
+=> Cập nhật toàn bộ thông tin danh mục con với body:
+
+json
+Copy code
+{
+  "name": "Gaming Laptops",
+  "category": 1
+}
+PATCH: https://storyspace.azurewebsites.net//api/book/subcategories/{id}/
+=> Cập nhật một hoặc nhiều trường danh mục con với body:
+
+json
+Copy code
+{
+  "name": "Business Laptops"
+}

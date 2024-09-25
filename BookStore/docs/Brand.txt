@@ -1,0 +1,30 @@
+Brand:
+GET: https://storyspace.azurewebsites.net//api/book/brands/
+=> Lấy danh sách tất cả các thương hiệu.
+
+POST: https://storyspace.azurewebsites.net//api/book/brands/
+=> Tạo thương hiệu mới với body:
+
+json
+Copy code
+{
+  "name": "Apple",
+  "logo": "logo_url.jpg"
+}
+PUT: https://storyspace.azurewebsites.net//api/book/brands/{id}/
+=> Cập nhật toàn bộ thông tin thương hiệu với body:
+
+json
+Copy code
+{
+  "name": "Apple Inc.",
+  "logo": "new_logo_url.jpg"
+}
+PATCH: https://storyspace.azurewebsites.net//api/book/brands/{id}/
+=> Cập nhật một hoặc nhiều trường thương hiệu với body:
+
+json
+Copy code
+{
+  "name": "Apple Update"
+}
