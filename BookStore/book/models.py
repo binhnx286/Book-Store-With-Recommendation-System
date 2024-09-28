@@ -16,6 +16,9 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
+    class Meta:
+        db_table = 'product'
+    
 #Brand 
 class Brand(models.Model):
     name = models.CharField(max_length=255)
@@ -24,6 +27,11 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        db_table = 'brand'
+    
+    
 
 #Category
 class Category(models.Model):
@@ -32,6 +40,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        db_table  = 'category'
 
 #Sub Category
 class SubCategory(models.Model):
@@ -41,3 +52,6 @@ class SubCategory(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        db_table = 'subcategory'

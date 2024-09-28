@@ -1,0 +1,182 @@
+1. API Order:
+GET: https://storyspace.azurewebsites.net//api/cart/orders/
+=> Lấy danh sách tất cả các đơn hàng.
+
+POST: https://storyspace.azurewebsites.net//api/cart/orders/
+=> Tạo đơn hàng mới với body:
+
+json
+Copy code
+{
+  "discount": 10,
+  "sub_total": 200000,
+  "total": 180000,
+  "shipping": 15000,
+  "create_time": "2024-09-25T13:00:00Z",
+  "status": "Pending",
+  "user_id": 1
+}
+PUT: https://storyspace.azurewebsites.net//api/cart/orders/{id}/
+=> Cập nhật toàn bộ thông tin đơn hàng với body:
+
+json
+Copy code
+{
+  "discount": 5,
+  "sub_total": 180000,
+  "total": 170000,
+  "shipping": 15000,
+  "create_time": "2024-09-26T13:00:00Z",
+  "status": "Completed",
+  "user_id": 1
+}
+PATCH: https://storyspace.azurewebsites.net//api/cart/orders/{id}/
+=> Cập nhật một hoặc nhiều trường của đơn hàng với body:
+
+json
+Copy code
+{
+  "status": "Shipped"
+}
+2. API OrderDetail:
+GET: https://storyspace.azurewebsites.net//api/cart/order-details/
+=> Lấy danh sách tất cả các chi tiết đơn hàng.
+
+POST: https://storyspace.azurewebsites.net//api/cart/order-details/
+=> Tạo chi tiết đơn hàng mới với body:
+
+json
+Copy code
+{
+  "id": 1,
+  "product_id": 2,
+  "quantity": 3,
+  "total": 600000,
+  "discount": 10000
+}
+PUT: https://storyspace.azurewebsites.net//api/cart/order-details/{id}/{product_id}/
+=> Cập nhật toàn bộ thông tin chi tiết đơn hàng với body:
+
+json
+Copy code
+{
+  "quantity": 2,
+  "total": 400000,
+  "discount": 5000
+}
+PATCH: https://storyspace.azurewebsites.net//api/cart/order-details/{id}/{product_id}/
+=> Cập nhật một hoặc nhiều trường của chi tiết đơn hàng với body:
+
+json
+Copy code
+{
+  "quantity": 4
+}
+3. API Cart:
+GET: https://storyspace.azurewebsites.net//api/cart/carts/
+=> Lấy danh sách tất cả các giỏ hàng.
+
+POST: https://storyspace.azurewebsites.net//api/cart/carts/
+=> Tạo giỏ hàng mới với body:
+
+json
+Copy code
+{
+  "discount": 10,
+  "sub_total": 200000,
+  "total": 180000,
+  "user_id": 1
+}
+PUT: https://storyspace.azurewebsites.net//api/cart/carts/{id}/
+=> Cập nhật toàn bộ thông tin giỏ hàng với body:
+
+json
+Copy code
+{
+  "discount": 5,
+  "sub_total": 150000,
+  "total": 145000,
+  "user_id": 1
+}
+PATCH: https://storyspace.azurewebsites.net//api/cart/carts/{id}/
+=> Cập nhật một hoặc nhiều trường của giỏ hàng với body:
+
+json
+Copy code
+{
+  "total": 190000
+}
+
+
+
+
+
+
+
+1. Tạo đơn hàng có sử dụng voucher
+Để tạo một đơn hàng áp dụng mã voucher, bạn cần thực hiện một POST request đến API với thông tin đơn hàng và ID của voucher.
+
+API Endpoint:
+bash
+Copy code
+POST /api/cart/orders/
+Request Body:
+json
+Copy code
+{
+    "sub_total": 1000,        // Tổng số tiền trước khi áp dụng voucher
+    "shipping": 50,           // Phí vận chuyển
+    "voucher": 1              // ID của voucher (nếu có)
+}
+Response Body (Khi thành công):
+json
+Copy code
+{
+    "id": 1,
+    "discount": 100,         // Số tiền được giảm từ voucher
+    "sub_total": 1000,
+    "total": 900,            // Tổng số tiền sau khi áp dụng voucher
+    "shipping": 50,
+    "create_time": "2024-09-25T15:00:00Z",
+    "status": "pending",
+    "user_id": 1,
+    "isDelete": false
+}
+2. Tạo đơn hàng không sử dụng voucher
+Nếu bạn không có voucher, chỉ cần gửi thông tin đơn hàng mà không có trường voucher trong request.
+
+API Endpoint:
+bash
+Copy code
+POST /api/cart/orders/
+Request Body:
+json
+Copy code
+{
+    "sub_total": 1000,        // Tổng số tiền trước khi áp dụng voucher
+    "shipping": 50            // Phí vận chuyển
+}
+Response Body (Khi thành công):
+json
+Copy code
+{
+    "id": 2,
+    "discount": 0,           // Không có voucher, nên không có giảm giá
+    "sub_total": 1000,
+    "total": 1000,           // Tổng số tiền giữ nguyên vì không có voucher
+    "shipping": 50,
+    "create_time": "2024-09-25T15:10:00Z",
+    "status": "pending",
+    "user_id": 1,
+    "isDelete": false
+}
+3. Xử lý các tình huống khác
+Voucher không hợp lệ: Nếu người dùng cung cấp ID của voucher không tồn tại hoặc đã bị xoá (isDelete=True), API sẽ trả về lỗi 400 Bad Request.
+Response Body (Voucher không hợp lệ):
+json
+Copy code
+{
+    "voucher": [
+        "Voucher không hợp lệ."
+    ]
+}
