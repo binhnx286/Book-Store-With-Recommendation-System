@@ -1,0 +1,2 @@
+
+GET https://storyspace.azurewebsites.net/api/book/products/1    

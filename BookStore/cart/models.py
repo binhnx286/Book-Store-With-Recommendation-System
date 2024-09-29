@@ -14,6 +14,10 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} - {self.user.name}"
+    
+    
+    class Meta:
+        db_table = 'order'
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -25,6 +29,10 @@ class OrderDetail(models.Model):
 
     def __str__(self):
         return f"OrderDetail {self.order.id} - {self.product.name}"
+    
+    
+    class Meta:
+        db_table = 'orderdetail'
 
 class Cart(models.Model):
     discount = models.IntegerField(null=True, blank=True)
@@ -34,6 +42,9 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Cart {self.id} - {self.user.name}"
+    
+    class Meta:
+        db_table = 'cart'
 
 class Voucher(models.Model):
     discount_percent = models.IntegerField()
@@ -42,3 +53,7 @@ class Voucher(models.Model):
 
     def __str__(self):
         return f"{self.description} - {self.discount_percent}% discount"
+    
+    
+    class Meta:
+        db_table = 'voucher'
