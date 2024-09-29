@@ -19,7 +19,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         subcategory_id = self.request.query_params.get('subcategory', None)
 
         if category_id is not None:
-            queryset = queryset.filter(category_id=category_id)
+             queryset = queryset.filter(sub_category__category__id=category_id)
 
         if subcategory_id is not None:
             queryset = queryset.filter(sub_category_id=subcategory_id)
