@@ -16,16 +16,15 @@ from book.models import Product
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user_id = self.request.data.get('user')  # Lấy user_id từ request
-        if user_id:
-            try:
-                user = Account.objects.get(id=user_id)  # Lấy người dùng từ cơ sở dữ liệu
-            except Account.DoesNotExist:
-                raise ValidationError({"user": "Người dùng không tồn tại."})
-        else:
-            user = None  # Nếu không có user_id, gán user là None (có thể để trống nếu bạn cho phép)
+    
+        try:
+            user = Account.objects.get(id=user_id)  # Lấy người dùng từ cơ sở dữ liệu
+        except Account.DoesNotExist:
+            raise ValidationError({"user": "Người dùng không tồn tại."})
 
         serializer.save(user=user)  # Gán người dùng cho đối tượng Rating
 
@@ -62,7 +61,7 @@ class BookRecommendationAPIView(APIView):
         # Lấy ma trận người dùng - sản phẩm
         X_train = kNNCollaborativeFiltering.get_user_product_matrix()
         
-        # Khởi tạo mô hình với số hàng xóm k = 5
+        # k = 5
         model = kNNCollaborativeFiltering(k_neighbours=5)
         
         # Huấn luyện mô hình
