@@ -8,6 +8,6 @@ router.register(r'ratings', RatingViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('recommendations/<int:user_id>/', BookRecommendationAPIView.as_view(), name='book-recommendations'),
-     path('recommendations-list/<int:user_id>/', BookRecommendationListAPIView.as_view(), name='book-recommendations-list'),
+    path('recommendations-list/<int:user_id>/', BookRecommendationListAPIView.as_view(), name='book-recommendations-list'),
     
 ]
