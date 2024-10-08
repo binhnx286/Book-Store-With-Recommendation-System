@@ -11,7 +11,8 @@ from rest_framework.exceptions import ValidationError
 from user.models import Account
 from book.serializers import ProductSerializer
 from book.models import Product
-
+from django.db.models import Avg
+from rest_framework.decorators import action
 
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
@@ -27,7 +28,19 @@ class RatingViewSet(viewsets.ModelViewSet):
             raise ValidationError({"user": "Người dùng không tồn tại."})
 
         serializer.save(user=user)  # Gán người dùng cho đối tượng Rating
+    @action(detail=True, methods=['get'])
+    def average_rating(self, request, pk=None):
+        """Trả về trung bình rating của một sản phẩm."""
+        product_id = pk  # Lấy product_id từ URL
 
+        # Tính trung bình rating cho sản phẩm có id = product_id
+        average = Rating.objects.filter(product_id=product_id).aggregate(Avg('rate'))['rate__avg']
+        
+        # Kiểm tra nếu không có đánh giá nào thì trả về None
+        if average is None:
+            average = 0
+        return Response({"product_id": product_id, "average_rating": average}, status=status.HTTP_200_OK)
+    
 class BookRecommendationListAPIView(APIView):
     def get(self, request, user_id):
         # Lấy ma trận người dùng - sản phẩm
