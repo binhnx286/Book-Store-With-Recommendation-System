@@ -18,7 +18,7 @@ from rest_framework.decorators import action
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user_id = self.request.data.get('user')  # Lấy user_id từ request
