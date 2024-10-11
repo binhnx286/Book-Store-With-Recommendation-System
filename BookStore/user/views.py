@@ -54,6 +54,7 @@ class AuthToken(APIView):
                     'refresh': str(refresh),
                     'access': str(access_token),
                     'email': account.email,
+                    'user_id': account.pk,
                 })
             else:
                 return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
