@@ -9,4 +9,5 @@ class RatingSerializer(serializers.ModelSerializer):
         fields = ['id','user','product','rate','feed_back','isDelete']
     def get_user(self, obj):
         # Sử dụng AccountSerializer để serialize user và chỉ lấy tên
-        return {"name": obj.user.name}
+        return {"name": obj.user.name,
+                "email":obj.user.email}
