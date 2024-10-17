@@ -67,7 +67,7 @@ class BookRecommendationListAPIView(APIView):
         
         # Dự đoán gợi ý cho người dùng
         recommendations = model.predict(user_id)
-        
+        recommendations = [rec for rec in recommendations if rec[0] != user_id]
         # Chuyển đổi gợi ý thành định dạng JSON
         recommendation_list = [
             {
@@ -95,12 +95,26 @@ class BookRecommendationAPIView(APIView):
         
         # Dự đoán gợi ý cho người dùng
         recommendations = model.predict(user_id)
+
+        similarity_threshold = 0.6  
+        filtered_recommendations = [
+            rec for rec in recommendations if rec[1] >= similarity_threshold
+        ]
         
-        if not recommendations or 'U' in [rec[0] for rec in recommendations]:
+
+        num_recommendations = int(request.query_params.get('num', 5))
+        filtered_recommendations = filtered_recommendations[:num_recommendations]
+
+        if not filtered_recommendations or 'U' in [rec[0] for rec in filtered_recommendations]:
             return Response({'message': 'No recommendations available or invalid recommendations for this user'}, status=status.HTTP_200_OK)
 
-        # Chuyển đổi gợi ý thành danh sách sản phẩm được gợi ý
-        recommended_product_ids = [rec[0] for rec in recommendations]  # Lấy danh sách ID sản phẩm
+        recommended_product_ids = []
+        for rec in filtered_recommendations:
+            user = rec[0]
+            user_high_ratings = Rating.objects.filter(user_id=user, rate__gte=4).values_list('product_id', flat=True)
+            recommended_product_ids.extend(user_high_ratings)
+        user_rated_products = Rating.objects.filter(user_id=user_id).values_list('product_id', flat=True)
+        recommended_product_ids = list(set(recommended_product_ids) - set(user_rated_products))
 
         # Lấy các sản phẩm tương ứng với ID
         recommended_products = Product.objects.filter(id__in=recommended_product_ids)
