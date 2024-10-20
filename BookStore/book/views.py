@@ -23,8 +23,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if subcategory_id is not None:
             queryset = queryset.filter(sub_category_id=subcategory_id)
-
         return queryset
+    
 def import_products_from_csv(file_path):
     with open(file_path, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
@@ -32,15 +32,32 @@ def import_products_from_csv(file_path):
             try:
                 sub_category = SubCategory.objects.get(id=row['sub_category'])
 
+                # product = Product(
+                #     name=row['name'].strip(),
+                #     description=row['description'],
+                #     image=row['image'],
+                #     quantity=int(row['quantity']),
+                #     price_origin=float(row['price_origin']),
+                #     new_price=float(row['new_price']) if row['new_price'] else None,
+                #     viewed=int(row['view']),
+                #     sub_category=sub_category,
+                # )
                 product = Product(
                     name=row['name'].strip(),
                     description=row['description'],
                     image=row['image'],
                     quantity=int(row['quantity']),
-                    price_origin=float(row['price_origin']),
-                    new_price=float(row['new_price']) if row['new_price'] else None,
+                    price_origin=row['price_origin'],  # Giữ nguyên như CharField
+                    new_price=row['new_price'] if row['new_price'] else None,  # Giữ nguyên như CharField
                     viewed=int(row['view']),
                     sub_category=sub_category,
+                    publication_year=row['publication_year'],
+                    publisher=row['publisher'],
+                    author=row['author'],
+                    reprint_edition=row['reprint_edition'],
+                    dimensions=row['dimensions'],
+                    cover_type=row['cover_type'],
+                    is_delete=False,  # Mặc định không bị xóa
                 )
                 product.save()
             except ObjectDoesNotExist:

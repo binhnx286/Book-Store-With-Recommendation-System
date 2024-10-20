@@ -15,7 +15,6 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} - {self.user.name}"
     
-    
     class Meta:
         db_table = 'order'
 

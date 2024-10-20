@@ -12,7 +12,6 @@ class Role(models.Model):
     class Meta:
         db_table = "role"
 
-
 class AccountManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -54,6 +53,18 @@ class Account(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = "account"
 
+class UserToken(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    refresh_token = models.TextField()
+    access_token = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Token for {self.user.email} created at {self.created_at}'
+
+    class Meta:
+        db_table = "user_token"
+        
 # ACCOUNT
 # class Account(models.Model):
 #     name = models.CharField(max_length=255)
@@ -70,14 +81,4 @@ class Account(AbstractBaseUser, PermissionsMixin):
 #     class Meta:
 #         db_table = "account"
 
-class UserToken(models.Model):
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    refresh_token = models.TextField()
-    access_token = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'Token for {self.user.email} created at {self.created_at}'
-
-    class Meta:
-        db_table = "user_token"

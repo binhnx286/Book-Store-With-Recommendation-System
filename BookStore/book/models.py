@@ -12,6 +12,14 @@ class Product(models.Model):
     sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE, null=True)
     is_delete = models.BooleanField(default=False)
 
+    publication_year = models.CharField(max_length=4, blank=True, null=True)
+    publisher = models.CharField(max_length=255, blank=True, null=True)
+    author = models.CharField(max_length=255, blank=True, null=True)
+    reprint_edition = models.CharField(max_length=50, blank=True, null=True)
+    dimensions = models.CharField(max_length=50, blank=True, null=True)
+    cover_type = models.CharField(max_length=50, blank=True, null=True)
+    
+
     def __str__(self):
         return self.name
     
