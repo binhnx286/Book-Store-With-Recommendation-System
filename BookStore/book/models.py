@@ -3,7 +3,7 @@ from django.db import models
 # Product
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=1000, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     price_origin = models.CharField(max_length=255)
