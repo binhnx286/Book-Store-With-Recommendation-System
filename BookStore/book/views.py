@@ -12,7 +12,7 @@ import os
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    
+
     def get_queryset(self):
         queryset = Product.objects.all()
         category_id = self.request.query_params.get('category', None)
@@ -24,6 +24,31 @@ class ProductViewSet(viewsets.ModelViewSet):
         if subcategory_id is not None:
             queryset = queryset.filter(sub_category_id=subcategory_id)
         return queryset
+    
+class ProductSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        publisher = request.query_params.get('publisher', None)
+        author = request.query_params.get('author', None)
+        publication_year = request.query_params.get('publication_year', None)
+
+        queryset = Product.objects.all()
+
+        if publisher:
+            queryset = queryset.filter(publisher__icontains=publisher)
+        
+        if author:
+            queryset = queryset.filter(author__icontains=author)
+
+        if publication_year:
+            queryset = queryset.filter(publication_year__icontains=publication_year)
+            
+        serializer = ProductSerializer(queryset, many=True)
+
+        if not queryset.exists():
+            return Response({"message": "Không tìm thấy sản phẩm phù hợp."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     
 def import_products_from_csv(file_path):
     with open(file_path, mode='r', encoding='utf-8') as file:
