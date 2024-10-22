@@ -27,11 +27,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     
 class ProductSearchView(APIView):
     def get(self, request, *args, **kwargs):
+        name = request.query_params.get('name', None)
         publisher = request.query_params.get('publisher', None)
         author = request.query_params.get('author', None)
         publication_year = request.query_params.get('publication_year', None)
 
+
         queryset = Product.objects.all()
+        if name:
+            queryset = queryset.filter(name__icontains=name)
 
         if publisher:
             queryset = queryset.filter(publisher__icontains=publisher)
