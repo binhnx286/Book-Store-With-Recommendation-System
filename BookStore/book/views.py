@@ -28,27 +28,27 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductSearchView(APIView):
     def get(self, request, *args, **kwargs):
         name = request.query_params.get('name', None)
-        publisher = request.query_params.get('publisher', None)
-        author = request.query_params.get('author', None)
-        publication_year = request.query_params.get('publication_year', None)
-        sub_category = request.query_params.get('sub_category', None)
+        publishers = request.query_params.getlist('publisher', None)
+        authors = request.query_params.getlist('author', None)
+        publication_years = request.query_params.getlist('publication_year', None)
+        sub_categories = request.query_params.getlist('sub_category', None)
 
         queryset = Product.objects.all()
 
         if name:
             queryset = queryset.filter(name__icontains=name)
 
-        if publisher:
-            queryset = queryset.filter(publisher__icontains=publisher)
+        if publishers:
+            queryset = queryset.filter(publisher__in=publishers)
         
-        if author:
-            queryset = queryset.filter(author__icontains=author)
+        if authors:  
+            queryset = queryset.filter(author__in = authors)
 
-        if publication_year:
-            queryset = queryset.filter(publication_year__icontains=publication_year)
+        if publication_years:
+            queryset = queryset.filter(publication_year__in=publication_years)
 
-        if sub_category:
-            queryset = queryset.filter(sub_category__name__icontains=sub_category)
+        if sub_categories:
+            queryset = queryset.filter(sub_category__name__in=sub_categories)
     
             
         serializer = ProductSerializer(queryset, many=True)

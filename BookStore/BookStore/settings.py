@@ -99,7 +99,6 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #         'PORT': '3306',                 
 #     }
 # }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
