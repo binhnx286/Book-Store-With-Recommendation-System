@@ -35,6 +35,11 @@ class ProductSearchView(APIView):
 
         queryset = Product.objects.all()
 
+        all_sub_categories = Product.objects.values_list('sub_category__name', flat=True).distinct()
+        all_publishers = Product.objects.values_list('publisher', flat=True).distinct()
+        all_authors = Product.objects.values_list('author', flat=True).distinct()
+        all_publication_years = Product.objects.values_list('publication_year', flat=True).distinct()
+
         if name:
             queryset = queryset.filter(name__icontains=name)
 
@@ -63,10 +68,10 @@ class ProductSearchView(APIView):
 
         return Response({
             "products": serializer.data,
-            "sub_categories": list(sub_categories) ,
-            "publishers": list(publishers),
-            "authors": list(authors),
-            "publication_years": list(publication_years)
+            "sub_categories": list(all_sub_categories),
+            "publishers": list(all_publishers),
+            "authors": list(all_authors),
+            "publication_years": list(all_publication_years)
         }, status=status.HTTP_200_OK)
     
     
