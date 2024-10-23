@@ -31,9 +31,10 @@ class ProductSearchView(APIView):
         publisher = request.query_params.get('publisher', None)
         author = request.query_params.get('author', None)
         publication_year = request.query_params.get('publication_year', None)
-
+        sub_category = request.query_params.get('sub_category', None)
 
         queryset = Product.objects.all()
+
         if name:
             queryset = queryset.filter(name__icontains=name)
 
@@ -45,13 +46,28 @@ class ProductSearchView(APIView):
 
         if publication_year:
             queryset = queryset.filter(publication_year__icontains=publication_year)
+
+        if sub_category:
+            queryset = queryset.filter(sub_category__name__icontains=sub_category)
+    
             
         serializer = ProductSerializer(queryset, many=True)
+        
+        sub_categories = queryset.values_list('sub_category__name').distinct()
+        publishers = queryset.values_list('publisher', flat=True).distinct()
+        authors = queryset.values_list('author', flat=True).distinct()
+        publication_years = queryset.values_list('publication_year', flat=True).distinct()
 
         if not queryset.exists():
             return Response({"message": "Không tìm thấy sản phẩm phù hợp."}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            "products": serializer.data,
+            "sub_categories": list(sub_categories) ,
+            "publishers": list(publishers),
+            "authors": list(authors),
+            "publication_years": list(publication_years)
+        }, status=status.HTTP_200_OK)
     
     
 def import_products_from_csv(file_path):
