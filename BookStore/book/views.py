@@ -30,15 +30,10 @@ class ProductSearchView(APIView):
         name = request.query_params.get('name', None)
         publishers = request.query_params.getlist('publisher', None)
         authors = request.query_params.getlist('author', None)
-        publication_years = request.query_params.getlist('publication_year', None)
+        publication_years = request.query_params.getlist('publication_years', None) 
         sub_categories = request.query_params.getlist('sub_category', None)
 
         queryset = Product.objects.all()
-
-        all_sub_categories = Product.objects.values_list('sub_category__name', flat=True).distinct()
-        all_publishers = Product.objects.values_list('publisher', flat=True).distinct()
-        all_authors = Product.objects.values_list('author', flat=True).distinct()
-        all_publication_years = Product.objects.values_list('publication_year', flat=True).distinct()
 
         if name:
             queryset = queryset.filter(name__icontains=name)
@@ -47,33 +42,35 @@ class ProductSearchView(APIView):
             queryset = queryset.filter(publisher__in=publishers)
         
         if authors:  
-            queryset = queryset.filter(author__in = authors)
+            queryset = queryset.filter(author__in=authors)
 
         if publication_years:
-            queryset = queryset.filter(publication_year__in=publication_years)
+            queryset = queryset.filter(publication_year__in=publication_years)  
 
         if sub_categories:
             queryset = queryset.filter(sub_category__name__in=sub_categories)
-    
-            
-        serializer = ProductSerializer(queryset, many=True)
-        
-        sub_categories = queryset.values_list('sub_category__name').distinct()
-        publishers = queryset.values_list('publisher', flat=True).distinct()
-        authors = queryset.values_list('author', flat=True).distinct()
-        publication_years = queryset.values_list('publication_year', flat=True).distinct()
 
+        filtered_sub_categories = queryset.values_list('sub_category__name', flat=True).distinct()
+        filtered_publishers = queryset.values_list('publisher', flat=True).distinct()
+        filtered_authors = queryset.values_list('author', flat=True).distinct()
+        filtered_publication_years = queryset.values_list('publication_year', flat=True).distinct()
+
+      
+        serializer = ProductSerializer(queryset, many=True)
+
+      
         if not queryset.exists():
             return Response({"message": "Không tìm thấy sản phẩm phù hợp."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({
             "products": serializer.data,
-            "sub_categories": list(all_sub_categories),
-            "publishers": list(all_publishers),
-            "authors": list(all_authors),
-            "publication_years": list(all_publication_years)
+            "sub_categories": list(filtered_sub_categories),
+            "publishers": list(filtered_publishers),
+            "authors": list(filtered_authors),
+            "publication_years": list(filtered_publication_years)  
         }, status=status.HTTP_200_OK)
-    
+
+
     
 def import_products_from_csv(file_path):
     with open(file_path, mode='r', encoding='utf-8') as file:
