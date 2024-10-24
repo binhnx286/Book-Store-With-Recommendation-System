@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, OrderDetail, Cart , Voucher
+from .models import Order, OrderDetail, Cart , Voucher , CartItem
 from book.models import Product
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class OrderSerializer(serializers.ModelSerializer):
         # Tạo order
         order = super().create(validated_data)
 
-        # Tạo OrderDetail từ dữ liệu đã xác thực và kiểm tra tồn kho
+      
         for detail in order_details:
             product = Product.objects.get(id=detail['product_id'])
             if detail['quantity'] > product.stock:
@@ -78,10 +78,22 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         model = OrderDetail
         fields = '__all__'
 
+class CartItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()  
+
+    class Meta:
+        model = CartItem
+        fields = ['id','product', 'product_name', 'quantity', 'total']  
+
+    def get_product_name(self, obj):
+        return obj.product.name  
+
 class CartSerializer(serializers.ModelSerializer):
+    cart_items = CartItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields = ['id', 'discount', 'sub_total', 'total', 'user', 'cart_items']
 
 class VoucherSerializer(serializers.ModelSerializer):
     class Meta:
