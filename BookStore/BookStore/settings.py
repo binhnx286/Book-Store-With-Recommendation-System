@@ -106,7 +106,7 @@ DATABASES = {
         'NAME': 'storyspace-database',  
         'USER': 'vqpxgsfvsq',      
         'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
-        'HOST': 'storyspace-server.mysql.database.azure.com',  # Cập nhật với hostname của máy chủ MySQL
+        'HOST': 'storyspace-server.mysql.database.azure.com',  
         'PORT': '3306',                 
     }
 }

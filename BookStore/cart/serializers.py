@@ -89,11 +89,16 @@ class CartItemSerializer(serializers.ModelSerializer):
         return obj.product.name  
 
 class CartSerializer(serializers.ModelSerializer):
-    cart_items = CartItemSerializer(many=True, read_only=True)
+    
+    cart_items = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
         fields = ['id', 'discount', 'sub_total', 'total', 'user', 'cart_items']
+
+    def get_cart_items(self, obj):
+        # Lọc cart_items để chỉ lấy những cái không bị xóa
+        return CartItemSerializer(obj.cart_items.filter(is_delete=False), many=True).data
 
 class VoucherSerializer(serializers.ModelSerializer):
     class Meta:

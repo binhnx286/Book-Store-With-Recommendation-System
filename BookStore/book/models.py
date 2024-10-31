@@ -23,6 +23,13 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
+    @property
+    def discount_percent(self):
+     
+        if self.price_origin and self.new_price < self.price_origin:
+            return round((1 - (self.new_price / self.price_origin)) * 100, 2)
+        return 0
+
     class Meta:
         db_table = 'product'
     

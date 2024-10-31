@@ -5,11 +5,15 @@ from rest_framework.permissions import IsAuthenticated
 from book.models import Product
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+    
 class OrderDetailViewSet(viewsets.ModelViewSet):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailSerializer
@@ -43,19 +47,20 @@ class CartViewSet(viewsets.ModelViewSet):
         # Lấy hoặc tạo giỏ hàng cho người dùng
         cart, created = Cart.objects.get_or_create(user=request.user, defaults={'discount': 0, 'sub_total': 0, 'total': 0})
 
-        # Lấy hoặc tạo CartItem cho sản phẩm
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+       
+        cart_item = CartItem.objects.filter(cart=cart, product=product, is_delete=False).first()
 
-        # Cập nhật số lượng và tổng
-        cart_item.quantity += quantity
-        cart_item.save()  # Lưu CartItem
+        if cart_item:
+            # Nếu tồn tại, cập nhật số lượng
+            cart_item.quantity += quantity
+            cart_item.save()  # Lưu CartItem
+        else:
+            # Nếu không tồn tại, tạo mới CartItem
+            cart_item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
         product.quantity -= quantity
-        product.save()  # Lưu sản phẩm sau khi cập nhật tồn kho
-
-        # # Cập nhật tổng giá trị của giỏ hàng
-        # cart.calculate_totals()  # Tính toán lại tổng cho giỏ hàng
-
+        product.save()  
+       
         # Tạo dữ liệu trả về
         response_data = {
             "product_id": product.id,
@@ -65,6 +70,63 @@ class CartViewSet(viewsets.ModelViewSet):
         }
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+    
+class CheckoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, order_id):
+        try:
+            # Lấy đơn hàng theo order_id
+            order = Order.objects.get(id=order_id)
+
+            # Lấy tất cả OrderDetail liên quan đến order
+            order_details = OrderDetail.objects.filter(order=order)
+
+            # Serialize dữ liệu
+            serializer = OrderDetailSerializer(order_details, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+    def post(self, request):
+        # Lấy giỏ hàng của người dùng
+        cart = Cart.objects.filter(user=request.user).first()
+        if not cart or not cart.cart_items.filter(is_delete=False).exists():
+            return Response({"error": "Giỏ hàng trống."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Lấy phí vận chuyển từ request, nếu không có thì sử dụng giá trị mặc định
+        shipping = request.data.get('shipping', 0)  # Ví dụ: giá trị mặc định là 0
+
+        # Tạo Order
+        order = Order.objects.create(
+            user=request.user,
+            discount=cart.discount,
+            sub_total=cart.sub_total,
+            total=cart.total + shipping,  # Thêm chi phí vận chuyển vào tổng
+            shipping=shipping,  # Lưu phí vận chuyển
+        )
+
+        # Tạo OrderDetail cho mỗi CartItem
+        for cart_item in cart.cart_items.filter(is_delete=False):
+            OrderDetail.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                total=cart_item.total,
+                discount=cart_item.product.discount if hasattr(cart_item.product, 'discount') else 0,  # Lưu giảm giá nếu có
+            )
+            # Đánh dấu CartItem là đã xóa
+            cart_item.is_delete = True
+            cart_item.save()
+
+        # Tính toán lại tổng giỏ hàng
+        cart.calculate_totals()
+
+        return Response({"message": "Checkout thành công.", "order_id": order.id}, status=status.HTTP_201_CREATED)
+
+
+    
 
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
@@ -74,8 +136,10 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         cart_id = self.request.query_params.get('cart_id')  
         if cart_id:
-            return self.queryset.filter(cart_id=cart_id) 
-        return self.queryset  
+            # Chỉ lấy các CartItem chưa bị xóa (is_delete=False)
+            return self.queryset.filter(cart_id=cart_id, is_delete=False) 
+        # Trả về tất cả CartItem chưa bị xóa
+        return self.queryset.filter(is_delete=False) 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         quantity = request.data.get('quantity', instance.quantity)
@@ -107,6 +171,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
         # Trả về dữ liệu đã cập nhật
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()  

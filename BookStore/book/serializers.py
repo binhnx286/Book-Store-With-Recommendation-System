@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Product , Category  , SubCategory
 
 class ProductSerializer(serializers.ModelSerializer):
+    discount_percent = serializers.ReadOnlyField()
     sub_category = serializers.CharField(source='sub_category.name', read_only=True)
     class Meta:
         model = Product

@@ -41,7 +41,7 @@ class Cart(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     def calculate_totals(self):
-        self.sub_total = sum(item.quantity * item.price() for item in self.cart_items.all())
+        self.sub_total = sum(item.quantity * item.price() for item in self.cart_items.filter(is_delete=False))
         self.total = self.sub_total - (self.discount or 0)
         self.save()
 
@@ -50,7 +50,6 @@ class Cart(models.Model):
 
     class Meta:
         db_table = 'cart'
-
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE)
