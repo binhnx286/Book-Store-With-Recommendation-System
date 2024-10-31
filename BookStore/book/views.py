@@ -27,21 +27,23 @@ class ProductViewSet(viewsets.ModelViewSet):
         if subcategory_id is not None:
             queryset = queryset.filter(sub_category_id=subcategory_id)
         return queryset
-    @action(detail=False, methods=['get'], url_path='highest-discount')
-    def highest_discount(self, request):
+    @action(detail=False, methods=['get'], url_path='top-discount')
+    def top_discount(self, request):
         # Sắp xếp sản phẩm theo discount_percent (từ cao đến thấp)
         products_with_discount = sorted(
             Product.objects.all(),
             key=lambda product: product.discount_percent,
             reverse=True
         )
-        
-        if not products_with_discount:
+
+        # Lấy 5 sản phẩm có mức giảm giá cao nhất
+        top_discounted_products = products_with_discount[:5]
+
+        if not top_discounted_products:
             return Response({"detail": "Không có sản phẩm nào có mức giảm giá."}, status=status.HTTP_404_NOT_FOUND)
-        
-        
-        highest_discount_product = products_with_discount[0]
-        serializer = self.get_serializer(highest_discount_product)
+
+        # Serialize và trả về dữ liệu
+        serializer = self.get_serializer(top_discounted_products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProductSearchView(APIView):
