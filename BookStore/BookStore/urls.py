@@ -23,6 +23,7 @@ def home(request):
     return HttpResponse("Welcome to the Django application!")
 urlpatterns = [
     path('', home),
+    path('grappelli/', include('grappelli.urls')),
     path("admin/", admin.site.urls),
     path("api/user/", include("user.urls")),
     path("api/book/", include("book.urls")),

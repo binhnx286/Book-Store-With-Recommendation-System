@@ -36,7 +36,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             reverse=True
         )
 
-        # Lấy 5 sản phẩm có mức giảm giá cao nhất
+    
         top_discounted_products = products_with_discount[:5]
 
         if not top_discounted_products:
@@ -109,7 +109,7 @@ class ProductSearchView(APIView):
             for y in years_list:
                 if re.match(r'^".*"$', y):  
                     y = y[1:-1]
-                    year_filters |= Q(publication_year__iexact=y)  # Thêm điều kiện OR
+                    year_filters |= Q(publication_year__iexact=y) 
                 else:  
                     year_filters |= Q(publication_year__iexact=y)
 

@@ -1,20 +1,15 @@
 from rest_framework import viewsets
 from .models import Account, Role , UserToken
-from .serializers import AccountSerializer , RoleSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import AccountSerializer , RoleSerializer 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .utils import check_password
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .permission import IsAdminRole
-
-
 import jwt
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from django.contrib.auth.hashers import check_password
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()  
@@ -25,6 +20,7 @@ class RoleViewSet(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated, IsAdminRole]
     
+
 
 class AuthToken(APIView):
     def post(self, request, *args, **kwargs):

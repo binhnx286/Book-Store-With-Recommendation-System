@@ -12,4 +12,5 @@ urlpatterns = [
     path('login/', AuthToken.as_view(), name='token_obtain'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('protected/', ProtectedAPI.as_view(), name='protected-api'),
+   
 ]
