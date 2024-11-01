@@ -11,11 +11,15 @@ import os
 import re
 from django.db.models import Q
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+from .filters import ProductFilter
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = ProductFilter
     def get_queryset(self):
         queryset = Product.objects.all()
         category_id = self.request.query_params.get('category', None)
