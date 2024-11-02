@@ -104,13 +104,23 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'storyspace-database',  
+#         'USER': 'vqpxgsfvsq',      
+#         'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
+#         'HOST': 'storyspace-server.mysql.database.azure.com',  
+#         'PORT': '3306',                 
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storyspace-database',  
-        'USER': 'vqpxgsfvsq',      
-        'PASSWORD': 'ojQsH$fSpUUgtT4Z',  
-        'HOST': 'storyspace-server.mysql.database.azure.com',  
+        'NAME': 'bk-bookstore-database',  
+        'USER': 'huhakijicc',      
+        'PASSWORD': '9f4rpbpv$YoA7zoF',  
+        'HOST': 'bk-bookstore-server.mysql.database.azure.com',  
         'PORT': '3306',                 
     }
 }
