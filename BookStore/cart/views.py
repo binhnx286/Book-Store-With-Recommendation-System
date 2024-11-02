@@ -7,6 +7,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+import uuid
+import requests
+import hmac
+import hashlib
+
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -89,44 +94,109 @@ class CheckoutView(APIView):
         except Order.DoesNotExist:
             return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
         
+    # def post(self, request):
+    #     # Lấy giỏ hàng của người dùng
+    #     cart = Cart.objects.filter(user=request.user).first()
+    #     if not cart or not cart.cart_items.filter(is_delete=False).exists():
+    #         return Response({"error": "Giỏ hàng trống."}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     # Lấy phí vận chuyển từ request, nếu không có thì sử dụng giá trị mặc định
+    #     shipping = request.data.get('shipping', 0)  # Ví dụ: giá trị mặc định là 0
+
+    #     # Tạo Order
+    #     order = Order.objects.create(
+    #         user=request.user,
+    #         discount=cart.discount,
+    #         sub_total=cart.sub_total,
+    #         total=cart.total + shipping,  # Thêm chi phí vận chuyển vào tổng
+    #         shipping=shipping,  # Lưu phí vận chuyển
+    #     )
+
+    #     # Tạo OrderDetail cho mỗi CartItem
+    #     for cart_item in cart.cart_items.filter(is_delete=False):
+    #         OrderDetail.objects.create(
+    #             order=order,
+    #             product=cart_item.product,
+    #             quantity=cart_item.quantity,
+    #             total=cart_item.total,
+    #             discount=cart_item.product.discount if hasattr(cart_item.product, 'discount') else 0,  # Lưu giảm giá nếu có
+    #         )
+    #         # Đánh dấu CartItem là đã xóa
+    #         cart_item.is_delete = True
+    #         cart_item.save()
+
+    #     # Tính toán lại tổng giỏ hàng
+    #     cart.calculate_totals()
+
+    #     return Response({"message": "Checkout thành công.", "order_id": order.id}, status=status.HTTP_201_CREATED)
     def post(self, request):
         # Lấy giỏ hàng của người dùng
         cart = Cart.objects.filter(user=request.user).first()
         if not cart or not cart.cart_items.filter(is_delete=False).exists():
             return Response({"error": "Giỏ hàng trống."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Lấy phí vận chuyển từ request, nếu không có thì sử dụng giá trị mặc định
-        shipping = request.data.get('shipping', 0)  # Ví dụ: giá trị mặc định là 0
+        # Lấy phí vận chuyển từ request
+        shipping = request.data.get('shipping', 0)
+        amount = cart.total + shipping  # Tổng tiền cần thanh toán
 
-        # Tạo Order
-        order = Order.objects.create(
-            user=request.user,
-            discount=cart.discount,
-            sub_total=cart.sub_total,
-            total=cart.total + shipping,  # Thêm chi phí vận chuyển vào tổng
-            shipping=shipping,  # Lưu phí vận chuyển
+        # Thông tin MoMo
+        endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
+        accessKey = "F8BBA842ECF85"
+        secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+        
+        partnerCode = "MOMO"
+        redirectUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b"
+        ipnUrl = redirectUrl
+        extraData = ""
+        partnerName = "Bookstore"
+        requestType = "payWithMethod"
+        storeId = "Test Store"
+        lang = "vi"
+
+        # Tạo ID đơn hàng và request
+        order_id = str(uuid.uuid4())
+        request_id = str(uuid.uuid4())
+        orderInfo = f"Thanh toán đơn hàng {order_id}tại Bookstore, tổng cộng {amount} VNĐ"
+        # Tạo chữ ký
+        rawSignature = (
+            f"accessKey={accessKey}&amount={amount}&extraData={extraData}&ipnUrl={ipnUrl}"
+            f"&orderId={order_id}&orderInfo={orderInfo}&partnerCode={partnerCode}"
+            f"&redirectUrl={redirectUrl}&requestId={request_id}&requestType={requestType}"
         )
+        h = hmac.new(bytes(secretKey, 'utf-8'), bytes(rawSignature, 'utf-8'), hashlib.sha256)
+        signature = h.hexdigest()
 
-        # Tạo OrderDetail cho mỗi CartItem
-        for cart_item in cart.cart_items.filter(is_delete=False):
-            OrderDetail.objects.create(
-                order=order,
-                product=cart_item.product,
-                quantity=cart_item.quantity,
-                total=cart_item.total,
-                discount=cart_item.product.discount if hasattr(cart_item.product, 'discount') else 0,  # Lưu giảm giá nếu có
-            )
-            # Đánh dấu CartItem là đã xóa
-            cart_item.is_delete = True
-            cart_item.save()
+       
+        data = {
+            'partnerCode': partnerCode,
+            'orderId': order_id,
+            'partnerName': partnerName,
+            'storeId': storeId,
+            'ipnUrl': ipnUrl,
+            'amount': str(amount),  # Chuyển đổi thành chuỗi
+            'lang': lang,
+            'requestType': requestType,
+            'redirectUrl': redirectUrl,
+            'autoCapture': True,
+            'orderInfo': orderInfo,
+            'requestId': request_id,
+            'extraData': extraData,
+            'signature': signature,
+            'orderGroupId': ""
+        }
 
-        # Tính toán lại tổng giỏ hàng
-        cart.calculate_totals()
+        response = requests.post(endpoint, json=data, headers={'Content-Type': 'application/json'})
+       
 
-        return Response({"message": "Checkout thành công.", "order_id": order.id}, status=status.HTTP_201_CREATED)
+        if response.status_code == 200:
+            response_data = response.json()
+            return Response({
+                "payUrl": response_data.get('shortLink')  
+            }, status=status.HTTP_200_OK)
+            
+        else:
+            return Response({"error": "Không thể kết nối đến MoMo."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-    
 
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()

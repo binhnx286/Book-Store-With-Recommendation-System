@@ -1,9 +1,9 @@
 from django.db import models
-
+from ckeditor.fields import RichTextField
 # Product
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     price_origin = models.IntegerField()  
