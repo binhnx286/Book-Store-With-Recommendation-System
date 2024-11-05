@@ -15,6 +15,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from .filters import ProductFilter
 
+
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -61,6 +64,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(top_viewed_products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+    
 class ProductSearchView(APIView):
     def get(self, request, *args, **kwargs):
         name = request.query_params.get('name', None)

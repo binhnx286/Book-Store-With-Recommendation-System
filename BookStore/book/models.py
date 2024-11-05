@@ -32,8 +32,7 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'product'
-    
-     
+
 
 #Category
 class Category(models.Model):

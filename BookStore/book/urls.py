@@ -11,4 +11,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('import-products/', ImportProductsView.as_view(), name='import-products'),
     path('search/', ProductSearchView.as_view(), name='product-search'),
+   
 ]
