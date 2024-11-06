@@ -11,31 +11,79 @@ import os
 import re
 from django.db.models import Q
 from rest_framework.decorators import action
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
-from .filters import ProductFilter
+from rest_framework.pagination import PageNumberPagination
+from django.core.cache import cache
 
-
-
+class CustomPagination(PageNumberPagination):
+    page_size = 12  
+    page_size_query_param = 'page_size'  
+    max_page_size = 100 
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'total_pages': self.page.paginator.num_pages,  
+            'results': data
+        })
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_class = ProductFilter
+    pagination_class = CustomPagination  
+    
+
     def get_queryset(self):
-        queryset = Product.objects.all()
-        category_id = self.request.query_params.get('category', None)
-        subcategory_id = self.request.query_params.get('subcategory', None)
+        # Lấy giá trị của 'category' và 'subcategory' từ query params
+        category_id = self.request.query_params.get('category')
+        subcategory_id = self.request.query_params.get('subcategory')
 
-        if category_id is not None:
-             queryset = queryset.filter(sub_category__category__id=category_id)
+        # Tạo cache key dựa trên category và subcategory
+        cache_key = f'products_category_{category_id}_subcategory_{subcategory_id}'
 
-        if subcategory_id is not None:
-            queryset = queryset.filter(sub_category_id=subcategory_id)
-        return queryset
+        # Kiểm tra xem cache đã tồn tại chưa
+        cached_products = cache.get(cache_key)
+        if cached_products is not None:
+            return cached_products
+
+        # Nếu chưa có cache, thực hiện truy vấn và lưu vào cache
+        if category_id and subcategory_id:
+            products = Product.objects.filter(
+                sub_category_id=subcategory_id,
+                sub_category__category_id=category_id
+            )
+        elif category_id:
+            products = Product.objects.filter(sub_category__category_id=category_id)
+        elif subcategory_id:
+            products = Product.objects.filter(sub_category_id=subcategory_id)
+        else:
+            products = Product.objects.all()
+
+        # Lưu kết quả vào cache với thời gian sống là 10 phút (600 giây)
+        cache.set(cache_key, products, timeout=600)
+
+        return products.order_by('name')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        # Áp dụng phân trang cho dữ liệu từ cache
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        # Trả về kết quả không phân trang nếu không có dữ liệu để phân trang
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
     @action(detail=False, methods=['get'], url_path='top-discount')
     def top_discount(self, request):
+        # Kiểm tra xem đã có cache chưa
+        cached_top_discount = cache.get('top_discount_products')
+        if cached_top_discount:
+            return Response(cached_top_discount, status=status.HTTP_200_OK)
+
         # Sắp xếp sản phẩm theo discount_percent (từ cao đến thấp)
         products_with_discount = sorted(
             Product.objects.all(),
@@ -43,7 +91,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             reverse=True
         )
 
-    
         top_discounted_products = products_with_discount[:5]
 
         if not top_discounted_products:
@@ -51,9 +98,19 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # Serialize và trả về dữ liệu
         serializer = self.get_serializer(top_discounted_products, many=True)
+
+        # Lưu vào cache với thời gian sống (timeout) là 10 phút (600 giây)
+        cache.set('top_discount_products', serializer.data, timeout=600)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['get'], url_path='top-views')
     def top_views(self, request):
+        # Kiểm tra xem đã có cache chưa
+        cached_top_views = cache.get('top_viewed_products')
+        if cached_top_views:
+            return Response(cached_top_views, status=status.HTTP_200_OK)
+
         # Lấy 5 sản phẩm có số lượt xem cao nhất
         top_viewed_products = Product.objects.order_by('-viewed')[:5]
 
@@ -62,8 +119,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # Serialize và trả về dữ liệu
         serializer = self.get_serializer(top_viewed_products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
+        # Lưu vào cache với thời gian sống (timeout) là 10 phút (600 giây)
+        cache.set('top_viewed_products', serializer.data, timeout=600)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     
 class ProductSearchView(APIView):
@@ -227,12 +287,16 @@ class ImportProductsView(APIView):
 
         return Response({"detail": "Products imported successfully."}, status=status.HTTP_201_CREATED)
 
+
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = CustomPagination  
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
+    pagination_class = CustomPagination  
 
 

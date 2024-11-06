@@ -106,7 +106,7 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #     }
 # }
 
-dev = False
+dev = True
 if dev:
     DATABASES = {
         'default': {
@@ -146,6 +146,14 @@ DEFAULT_FROM_EMAIL = 'binh.nguyen280697@hcmut.edu.vn'
 
 from datetime import timedelta
 
+#Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  #
+        'LOCATION': 'unique-snowflake',  
+    }
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -154,6 +162,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         # 'rest_framework.renderers.BrowsableAPIRenderer',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # Cấu hình phân trang
+    'PAGE_SIZE': 12,
 }
 
 SIMPLE_JWT = {
