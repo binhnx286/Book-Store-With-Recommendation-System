@@ -55,12 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     'rest_framework',
     'corsheaders',
     'user',
     'book',
     'rating',
     'cart',
+    'promotion.apps.PromotionConfig',
 ]
 
 MIDDLEWARE = [
@@ -162,9 +165,19 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         # 'rest_framework.renderers.BrowsableAPIRenderer',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # Cấu hình phân trang
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': None,  # Cấu hình phân trang
     'PAGE_SIZE': 12,
 }
+#Documentation api
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Bookstore API',
+    'DESCRIPTION': 'API documentation for Bookstore',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': True,  # Tắt tự động bao gồm schema trong các phản hồi API
+    'SCHEMA_PATH_PREFIX': '/api',   # Chỉ lấy tài liệu API cho các đường dẫn bắt đầu bằng /api
+}
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -211,8 +224,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
+USE_TZ = True
 USE_I18N = True
 
 USE_TZ = True
@@ -222,6 +236,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'promotion/static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

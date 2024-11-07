@@ -32,7 +32,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     pagination_class = CustomPagination  
     
-
+ 
+    
     def get_queryset(self):
         # Lấy giá trị của 'category' và 'subcategory' từ query params
         category_id = self.request.query_params.get('category')
@@ -292,11 +293,11 @@ class ImportProductsView(APIView):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = CustomPagination  
+ 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
-    pagination_class = CustomPagination  
+   
 
 

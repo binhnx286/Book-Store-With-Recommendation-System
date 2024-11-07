@@ -1,5 +1,8 @@
 from django.db import models
 from ckeditor.fields import RichTextField
+from django.utils import timezone
+from pytz import timezone as pytz_timezone
+from promotion.models import Promotion
 # Product
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -9,7 +12,7 @@ class Product(models.Model):
     price_origin = models.IntegerField()  
     new_price = models.IntegerField()    
     viewed = models.IntegerField(default=0)
-    sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE, null=True)
+    sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE, null=True,related_name='products')
     is_delete = models.BooleanField(default=False)
 
     publication_year = models.CharField(max_length=4, blank=True, null=True)
@@ -19,6 +22,7 @@ class Product(models.Model):
     dimensions = models.CharField(max_length=50, blank=True, null=True)
     cover_type = models.CharField(max_length=50, blank=True, null=True)
     
+    promotions = models.ManyToManyField(Promotion, blank=True, related_name="product_promotions")
 
     def __str__(self):
         return self.name

@@ -13,7 +13,7 @@ class Order(models.Model):
     isDelete = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Order {self.id} - {self.user.name}"
+        return f"Order {self.id} - {self.user.username}"
     
     class Meta:
         db_table = 'order'
@@ -46,7 +46,7 @@ class Cart(models.Model):
         self.save()
 
     def __str__(self):
-        return f"Cart {self.id} - {self.user.name}"
+        return f"Cart {self.id} - {self.user.username}"
 
     class Meta:
         db_table = 'cart'
