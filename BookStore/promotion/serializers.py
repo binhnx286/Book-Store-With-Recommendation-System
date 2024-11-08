@@ -11,3 +11,4 @@ class PromotionSerializer(serializers.ModelSerializer):
     def get_is_active_promotion(self, obj):
         """Trả về True nếu khuyến mãi đang hoạt động."""
         return obj.is_active_promotion()
+    

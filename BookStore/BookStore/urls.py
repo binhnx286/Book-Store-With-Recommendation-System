@@ -26,6 +26,7 @@ from drf_spectacular.views import (
 )
 
 def home(request):
+    
     return HttpResponse("Welcome to the Django application!")
 
 urlpatterns = [

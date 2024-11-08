@@ -137,6 +137,31 @@ else:
 
 #Email 
 
+
+# myproject/settings.py
+
+CELERY_BROKER_URL = 'redis://localhost:6380/0'  # URL của Redis
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
+# Cấu hình cho Celery Beat (task định kỳ)
+CELERY_BEAT_SCHEDULE = {
+    'update_expired_promotions_price': {
+        'task': 'promotion.tasks.update_expired_promotions_price',  
+        'schedule': 5.0,  # Chạy mỗi 5 giây
+    },
+}
+
+# from celery.schedules import crontab
+
+# CELERY_BEAT_SCHEDULE = {
+#     'update_expired_promotions_price': {
+#         'task': 'promotion.tasks.update_expired_promotions_price',  
+#         'schedule': crontab(minute=0, hour=0),  # Chạy vào lúc 0h mỗi ngày
+#     },
+# }
+
+
 # settings.py
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

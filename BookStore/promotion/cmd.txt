@@ -1,0 +1,3 @@
+redis-server --port 6380
+celery -A BookStore beat --loglevel=info
+celery -A BookStore worker --loglevel=info

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-
+from ckeditor.fields import RichTextField
 
 
 class Promotion(models.Model):
@@ -11,7 +11,7 @@ class Promotion(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     discount_percent = models.IntegerField()  # Phần trăm giảm giá
     start_date = models.DateTimeField()      # Ngày bắt đầu
     end_date = models.DateTimeField()        # Ngày kết thúc
@@ -32,8 +32,8 @@ class Promotion(models.Model):
     
     def update_new_price(self):
         """Cập nhật giá cho các sản phẩm thuộc chương trình khuyến mãi"""
-        today = timezone.now()
-        print(today)
+        # today = timezone.now()
+        # print(today)
         
         if self.is_active and self.start_date <= today <= self.end_date:
             print(f"Promotion {self.name} is active.")
