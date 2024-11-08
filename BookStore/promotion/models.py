@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from ckeditor.fields import RichTextUploadingField
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 class Promotion(models.Model):

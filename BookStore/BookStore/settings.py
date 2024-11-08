@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
+    'ckeditor_uploader', 
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'rest_framework',
@@ -65,7 +66,9 @@ INSTALLED_APPS = [
     'cart',
     'promotion.apps.PromotionConfig',
 ]
-
+CKEDITOR_UPLOAD_PATH = "uploads/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

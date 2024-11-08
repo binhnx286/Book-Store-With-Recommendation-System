@@ -19,6 +19,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -37,11 +40,12 @@ urlpatterns = [
     path("api/book/", include("book.urls")),
     path('api/rating/', include('rating.urls')),
     path('api/cart/', include('cart.urls')),
-     path('api/promotion/', include('promotion.urls')),
+    path('api/promotion/', include('promotion.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')), 
     #json
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Swagger UI
     path('api/docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     # ReDoc UI
     path('api/docs/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
