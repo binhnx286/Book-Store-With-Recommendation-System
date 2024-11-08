@@ -32,10 +32,9 @@ class Promotion(models.Model):
     
     def update_new_price(self):
         """Cập nhật giá cho các sản phẩm thuộc chương trình khuyến mãi"""
-        # today = timezone.now()
-        # print(today)
+       
         
-        if self.is_active and self.start_date <= today <= self.end_date:
+        if self.is_active and self.start_date <= timezone.now() <= self.end_date:
             print(f"Promotion {self.name} is active.")
             for subcategory in self.subcategories.all():
                 print(f"Products in Subcategory {subcategory.name}:")

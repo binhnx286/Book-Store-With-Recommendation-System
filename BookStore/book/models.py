@@ -3,6 +3,8 @@ from ckeditor.fields import RichTextField
 from django.utils import timezone
 from pytz import timezone as pytz_timezone
 from promotion.models import Promotion
+
+
 # Product
 class Product(models.Model):
     name = models.CharField(max_length=255)
