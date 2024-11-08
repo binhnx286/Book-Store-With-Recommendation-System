@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from ckeditor.fields import RichTextField
+from ckeditor.fields import RichTextUploadingField
 
 
 class Promotion(models.Model):
@@ -11,7 +11,7 @@ class Promotion(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    description = RichTextField(blank=True, null=True)
+    description = RichTextUploadingField(blank=True, null=True)
     discount_percent = models.IntegerField()  # Phần trăm giảm giá
     start_date = models.DateTimeField()      # Ngày bắt đầu
     end_date = models.DateTimeField()        # Ngày kết thúc
