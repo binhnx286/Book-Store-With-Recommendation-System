@@ -4,7 +4,7 @@ import re
 from book.serializers import ProductSerializer, SubCategorySerializer
 
 class PromotionSerializer(serializers.ModelSerializer):
-    is_active_promotion = serializers.SerializerMethodField()
+    
 
     products = ProductSerializer(many=True, read_only=True)
     subcategories = SubCategorySerializer(many=True, read_only=True)
@@ -18,15 +18,12 @@ class PromotionSerializer(serializers.ModelSerializer):
             'discount_percent',
             'start_date',
             'end_date',
-            'is_active_promotion',
+            'is_active',
             'promotion_type',
             'products',
             'subcategories'
         ]
-    
-    def get_is_active_promotion(self, obj):
-        """Trả về True nếu khuyến mãi đang hoạt động."""
-        return obj.is_active_promotion()
+
     def to_representation(self, instance):
         """Override to_representation để chỉnh sửa link ảnh trong description."""
         representation = super().to_representation(instance)
@@ -41,5 +38,4 @@ class PromotionSerializer(serializers.ModelSerializer):
         
         # Cập nhật lại description sau khi thay đổi
         representation['description'] = description
-        print(representation)
         return representation

@@ -13,13 +13,10 @@ class PromotionViewSet(viewsets.ReadOnlyModelViewSet):
     
 
     def get_queryset(self):
-        """Chỉ trả về các khuyến mãi đang hoạt động nếu có yêu cầu đặc biệt."""
-        active_only = self.request.query_params.get('active_only', None)
-        queryset = self.queryset
-        if active_only == 'true':
-            queryset = queryset.filter(
-                is_active=True,
-                start_date__lte=timezone.now(),
-                end_date__gte=timezone.now()
-            )
+        """Trả về các khuyến mãi đang hoạt động, bao gồm cả khi có cập nhật."""
+        queryset = Promotion.objects.filter(
+            is_active=True,
+            start_date__lte=timezone.now(),
+            end_date__gte=timezone.now()
+        )
         return queryset
