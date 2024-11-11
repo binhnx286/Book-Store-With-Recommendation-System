@@ -11,6 +11,7 @@ class Promotion(models.Model):
     ]
 
     name = models.CharField(max_length=255)
+    short_description = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextUploadingField(blank=True, null=True)
     discount_percent = models.IntegerField()  # Phần trăm giảm giá
     start_date = models.DateTimeField()      # Ngày bắt đầu
@@ -18,7 +19,8 @@ class Promotion(models.Model):
     is_active = models.BooleanField(default=True)  # Trạng thái chiến dịch
 
     promotion_type = models.CharField(max_length=20, choices=PROMOTION_TYPE_CHOICES, default='product')
-
+    image = models.ImageField(upload_to='promotions/', blank=True, null=True)  
+    
     subcategories = models.ManyToManyField('book.SubCategory', blank=True, related_name="promotion_subcategories")
     products = models.ManyToManyField('book.Product', blank=True, related_name="promotion_products")
 

@@ -40,6 +40,7 @@ mysqlclient==2.2.4
 numpy==2.1.1
 packaging==24.1
 pandas==2.2.3
+pillow==11.0.0
 prompt_toolkit==3.0.48
 PyJWT==2.9.0
 python-crontab==3.2.0

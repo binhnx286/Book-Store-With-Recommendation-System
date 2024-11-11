@@ -14,6 +14,7 @@ class PromotionSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'short_description', 
             'description',
             'discount_percent',
             'start_date',
@@ -21,7 +22,8 @@ class PromotionSerializer(serializers.ModelSerializer):
             'is_active',
             'promotion_type',
             'products',
-            'subcategories'
+            'subcategories',
+            'image', 
         ]
 
     def to_representation(self, instance):
