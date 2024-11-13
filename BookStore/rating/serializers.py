@@ -21,7 +21,8 @@ class RatingResponseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = RatingResponse
-        fields = ['rating', 'user', 'user_email', 'response_text', 'created_at']
+        fields = ['rating', 'user_email', 'response_text', 'created_at']
+        read_only_fields = ['user']  
     
     def validate(self, attrs):
         # Kiểm tra nếu đánh giá đã bị tắt (is_disabled = True)

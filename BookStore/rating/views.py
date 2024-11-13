@@ -60,31 +60,14 @@ class RatingResponseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Lưu phản hồi, đảm bảo người phản hồi là người dùng hiện tại
-        rating_response = serializer.save(user=self.request.user)
+        # Lưu phản hồi với người dùng hiện tại
+        serializer.save(user=self.request.user)
 
-        # Trả về phản hồi thành công
-        return Response({
-            'detail': 'Phản hồi đã được tạo thành công.',
-            'rating_response': RatingResponseSerializer(rating_response).data
-        }, status=status.HTTP_201_CREATED)
-
-    def get(self, request, rating_id):
-        # Lấy tất cả các phản hồi của Rating có rating_id
-        responses = RatingResponse.objects.filter(rating_id=rating_id)
-        
-        # Serialize các phản hồi
-        serializer = RatingResponseSerializer(responses, many=True)
-        
-        # Trả về các phản hồi dưới dạng JSON
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def list(self, request, *args, **kwargs):
-        # Lấy id người dùng từ token
-        user_id = request.user.id
-        print(f"User ID từ token: {user_id}")
-        
-        return super().list(request, *args, **kwargs)
+    def get_queryset(self):
+        rating_id = self.request.query_params.get('rating_id')
+        if rating_id is not None:
+            return RatingResponse.objects.filter(rating_id=rating_id)
+        return super().get_queryset()
 
 class BookRecommendationListAPIView(APIView):
     def get(self, request, user_id):
