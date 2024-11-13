@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Rating,RatingResponse
 from user.serializers import AccountSerializer
+from user.models import Account
 
 class RatingSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField() 
@@ -13,11 +14,13 @@ class RatingSerializer(serializers.ModelSerializer):
                 "email":obj.user.email}
     
 class RatingResponseSerializer(serializers.ModelSerializer):
-    rating = RatingSerializer(read_only=True)  # Nhúng thông tin đánh giá đầy đủ
-    user = AccountSerializer(read_only=True)  # Nhúng thông tin người phản hồi đầy đủ
+    # Sử dụng PrimaryKeyRelatedField để liên kết với Rating và Account (user) bằng ID
+    rating = serializers.PrimaryKeyRelatedField(queryset=Rating.objects.all())  # Nhận ID của Rating
+    user = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all())  # Nhận ID của User
+    
     response_text = serializers.CharField(max_length=255)
     created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = RatingResponse
-        fields = ['rating', 'user', 'response_text', 'created_at']
+        fields = ['rating', 'user', 'response_text', 'created_at'
