@@ -13,14 +13,19 @@ class RatingSerializer(serializers.ModelSerializer):
         return {"name": obj.user.username,
                 "email":obj.user.email}
     
-class RatingResponseSerializer(serializers.ModelSerializer):
-    # Sử dụng PrimaryKeyRelatedField để liên kết với Rating và Account (user) bằng ID
-    rating = serializers.PrimaryKeyRelatedField(queryset=Rating.objects.all())  # Nhận ID của Rating
-    user = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all())  # Nhận ID của User
-    
-    response_text = serializers.CharField(max_length=255)
-    created_at = serializers.DateTimeField(read_only=True)
 
+
+class RatingResponseSerializer(serializers.ModelSerializer):
+    # Nhúng thông tin email người phản hồi
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    
     class Meta:
         model = RatingResponse
-        fields = ['rating', 'user', 'response_text', 'created_at']
+        fields = ['rating', 'user', 'user_email', 'response_text', 'created_at']
+    
+    def validate(self, attrs):
+        # Kiểm tra nếu đánh giá đã bị tắt (is_disabled = True)
+        rating = attrs.get('rating')
+        if rating.is_disabled:
+            raise serializers.ValidationError("Không thể phản hồi cho đánh giá này vì nó đã bị tắt.")
+        return attrs

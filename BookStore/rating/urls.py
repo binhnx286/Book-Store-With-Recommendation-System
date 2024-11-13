@@ -10,4 +10,5 @@ urlpatterns = [
     path('recommendations/<int:user_id>/', BookRecommendationAPIView.as_view(), name='book-recommendations'),
     path('recommendations-list/<int:user_id>/', BookRecommendationListAPIView.as_view(), name='book-recommendations-list'),
     
+    
 ]
