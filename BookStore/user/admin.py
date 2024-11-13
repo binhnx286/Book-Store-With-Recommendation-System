@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Role , Account , UserToken
+from django.contrib.auth.models import Group
 
 admin.site.site_header = "Bookstore Admin"  # Tiêu đề trên đầu trang
 admin.site.site_title = "Bookstore Admin Portal"  # Tiêu đề của tab
@@ -15,7 +16,7 @@ class AccountAdmin(admin.ModelAdmin):
     # Thêm tùy chỉnh fieldsets để sắp xếp các trường trong trang chi tiết
     fieldsets = (
         (None, {
-            'fields': ('username', 'password')
+            'fields': ('username',)
         }),
         ('Thông tin cá nhân', {
             'fields': ('email', 'phone', 'address', 'status')
@@ -39,3 +40,4 @@ class UserTokenAdmin(admin.ModelAdmin):
     list_display = ('user', 'created_at')
     search_fields = ('user__email',)
     readonly_fields = ('created_at',)
+admin.site.unregister(Group)

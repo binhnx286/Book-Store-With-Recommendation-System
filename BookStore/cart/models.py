@@ -3,28 +3,29 @@ from user.models import Account
 from book.models import Product
 
 class Order(models.Model):
-    discount = models.IntegerField(null=True, blank=True)
-    sub_total = models.IntegerField()
-    total = models.IntegerField()
-    shipping = models.IntegerField(default=0)
-    create_time = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=255, default='Pending')
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    isDelete = models.BooleanField(default=False)
+    discount = models.IntegerField(null=True, blank=True, verbose_name='Giảm giá')
+    sub_total = models.IntegerField(verbose_name='Tổng tạm tính')
+    total = models.IntegerField(verbose_name='Tổng cộng')
+    shipping = models.IntegerField(default=0, verbose_name='Phí vận chuyển')
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='Thời gian tạo')
+    status = models.CharField(max_length=255, default='Pending', verbose_name='Trạng thái')
+    user = models.ForeignKey(Account, on_delete=models.CASCADE,verbose_name='Người mua')
+    isDelete = models.BooleanField(default=False, verbose_name='Đã xóa')
 
     def __str__(self):
         return f"Order {self.id} - {self.user.username}"
     
     class Meta:
         db_table = 'order'
+        verbose_name_plural = 'Đơn đặt hàng'
 
 class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    total = models.IntegerField()
-    discount = models.IntegerField(null=True, blank=True)
-    isDelete = models.BooleanField(default=False)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,verbose_name='Mã đơn')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,verbose_name='Sản phẩm')
+    quantity = models.IntegerField(verbose_name='Số lượng')
+    total = models.IntegerField(verbose_name='Tổng cộng')
+    discount = models.IntegerField(null=True, blank=True, verbose_name='Giảm giá')
+    isDelete = models.BooleanField(default=False, verbose_name='Đã xóa')
 
     def __str__(self):
         return f"OrderDetail {self.order.id} - {self.product.name}"
@@ -32,13 +33,14 @@ class OrderDetail(models.Model):
     
     class Meta:
         db_table = 'orderdetail'
+        verbose_name_plural = 'Chi tiết đơn hàng'
 
 class Cart(models.Model):
-    discount = models.IntegerField(null=True, blank=True)
-    sub_total = models.IntegerField(null=True, blank=True)
-    total = models.IntegerField(default=0)
-    is_delete = models.BooleanField(default=False)
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    discount = models.IntegerField(null=True, blank=True, verbose_name='Giảm giá')
+    sub_total = models.IntegerField(null=True, blank=True, verbose_name='Tổng phụ')
+    total = models.IntegerField(default=0, verbose_name='Tổng cộng')
+    is_delete = models.BooleanField(default=False, verbose_name='Đã xóa')
+    user = models.ForeignKey(Account, on_delete=models.CASCADE,verbose_name='Người dùng')
 
     def calculate_totals(self):
         self.sub_total = sum(item.quantity * item.price() for item in self.cart_items.filter(is_delete=False))
@@ -46,17 +48,18 @@ class Cart(models.Model):
         self.save()
 
     def __str__(self):
-        return f"Cart {self.id} - {self.user.username}"
+        return f"Cart- {self.user.username}"
 
     class Meta:
         db_table = 'cart'
+        verbose_name_plural = 'Giỏ hàng'
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
-    total = models.IntegerField( default=0)  
-    is_delete = models.BooleanField(default=False)
+    cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE, verbose_name='Giỏ hàng')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Sản phẩm')
+    quantity = models.IntegerField(default=0, verbose_name='Số lượng')
+    total = models.IntegerField(default=0, verbose_name='Tổng cộng')
+    is_delete = models.BooleanField(default=False, verbose_name='Đã xóa')
     def price(self):
         return self.product.new_price  
 
@@ -70,6 +73,7 @@ class CartItem(models.Model):
 
     class Meta:
         db_table = 'cart_item'
+        verbose_name_plural = 'Chi tiết giỏ hàng'
 
 class Voucher(models.Model):
     discount_percent = models.IntegerField()
@@ -82,3 +86,4 @@ class Voucher(models.Model):
     
     class Meta:
         db_table = 'voucher'
+        verbose_name_plural = 'Mã khuyến mãi'

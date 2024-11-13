@@ -1,10 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RatingViewSet,BookRecommendationAPIView,BookRecommendationListAPIView
+from .views import RatingViewSet,BookRecommendationAPIView,BookRecommendationListAPIView,RatingResponseViewSet
 
 router = DefaultRouter()
 router.register(r'ratings', RatingViewSet)
-
+router.register(r'rating-responses', RatingResponseViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('recommendations/<int:user_id>/', BookRecommendationAPIView.as_view(), name='book-recommendations'),

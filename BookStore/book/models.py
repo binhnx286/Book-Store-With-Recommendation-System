@@ -7,27 +7,28 @@ from promotion.models import Promotion
 
 # Product
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    description = RichTextField(blank=True, null=True)
-    image = models.CharField(max_length=255, blank=True, null=True)
-    quantity = models.IntegerField(default=0)
-    price_origin = models.IntegerField()  
-    new_price = models.IntegerField()    
-    viewed = models.IntegerField(default=0)
-    sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE, null=True,related_name='products')
-    is_delete = models.BooleanField(default=False)
+    name = models.CharField(max_length=255,verbose_name='Tên')
+    description = RichTextField(blank=True, null=True,verbose_name='Mô Tả')
+    image = models.CharField(max_length=255, blank=True, null=True,verbose_name='Hình ảnh')
+    quantity = models.IntegerField(default=0,verbose_name='Tồn kho')
+    price_origin = models.IntegerField(verbose_name='Giá gốc')  
+    new_price = models.IntegerField(verbose_name='Giá khuyến mãi')    
+    viewed = models.IntegerField(default=0,verbose_name='Lượt xem')
+    sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE, null=True,related_name='products',verbose_name='Danh mục con')
+    is_delete = models.BooleanField(default=False,verbose_name='Xóa')
 
-    publication_year = models.CharField(max_length=4, blank=True, null=True)
-    publisher = models.CharField(max_length=255, blank=True, null=True)
-    author = models.CharField(max_length=255, blank=True, null=True)
-    reprint_edition = models.CharField(max_length=50, blank=True, null=True)
-    dimensions = models.CharField(max_length=50, blank=True, null=True)
-    cover_type = models.CharField(max_length=50, blank=True, null=True)
+    publication_year = models.CharField(max_length=4, blank=True, null=True,verbose_name='Năm xuất bản')
+    publisher = models.CharField(max_length=255, blank=True, null=True,verbose_name='Nhà xuất bản')
+    author = models.CharField(max_length=255, blank=True, null=True,verbose_name='Tác giả')
+    reprint_edition = models.CharField(max_length=50, blank=True, null=True,verbose_name='Tái bản')
+    dimensions = models.CharField(max_length=50, blank=True, null=True,verbose_name='Kích thước')
+    cover_type = models.CharField(max_length=50, blank=True, null=True,verbose_name='Loại bìa')
     
-    promotions = models.ManyToManyField(Promotion, blank=True, related_name="product_promotions")
+    promotions = models.ManyToManyField(Promotion, blank=True, related_name="product_promotions",verbose_name='Các khuyến mãi')
 
     def __str__(self):
         return self.name
+    
     
     @property
     def discount_percent(self):
@@ -38,6 +39,7 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'product'
+        verbose_name_plural = 'Sách'
 
 
 #Category
@@ -50,6 +52,7 @@ class Category(models.Model):
     
     class Meta:
         db_table  = 'category'
+        verbose_name_plural = ' Danh mục'
 
 #Sub Category
 class SubCategory(models.Model):
@@ -62,3 +65,4 @@ class SubCategory(models.Model):
     
     class Meta:
         db_table = 'subcategory'
+        verbose_name_plural = 'Danh mục con'

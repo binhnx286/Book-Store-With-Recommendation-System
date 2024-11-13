@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'user',
-    'book',
+    'book.apps.BookConfig',
     'rating',
     'cart',
     'promotion.apps.PromotionConfig',

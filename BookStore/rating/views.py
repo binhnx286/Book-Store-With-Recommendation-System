@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Rating
-from .serializers import RatingSerializer
+from .models import Rating,RatingResponse
+from .serializers import RatingSerializer,RatingResponseSerializer
 
 from rest_framework.views import APIView
 from .knn import kNNCollaborativeFiltering
@@ -53,7 +53,15 @@ class RatingViewSet(viewsets.ModelViewSet):
             "average_rating": average,
             "ratings": serializer.data  # Danh sách các đánh giá bao gồm thông tin người dùng
         }, status=status.HTTP_200_OK)
-    
+
+class RatingResponseViewSet(viewsets.ModelViewSet):
+    queryset = RatingResponse.objects.all()
+    serializer_class = RatingResponseSerializer
+    serializer_class = RatingSerializer
+    def perform_create(self, serializer):
+        # Bạn có thể thêm mã để xử lý khi tạo mới một phản hồi
+        serializer.save(user=self.request.user)
+
 class BookRecommendationListAPIView(APIView):
     def get(self, request, user_id):
         # Lấy ma trận người dùng - sản phẩm

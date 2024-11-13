@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Rating
+from .models import Rating,RatingResponse
 from user.serializers import AccountSerializer
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -11,3 +11,13 @@ class RatingSerializer(serializers.ModelSerializer):
         # Sử dụng AccountSerializer để serialize user và chỉ lấy tên
         return {"name": obj.user.username,
                 "email":obj.user.email}
+    
+class RatingResponseSerializer(serializers.ModelSerializer):
+    rating = RatingSerializer(read_only=True)  # Nhúng thông tin đánh giá đầy đủ
+    user = AccountSerializer(read_only=True)  # Nhúng thông tin người phản hồi đầy đủ
+    response_text = serializers.CharField(max_length=255)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = RatingResponse
+        fields = ['rating', 'user', 'response_text', 'created_at']

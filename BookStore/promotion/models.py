@@ -10,19 +10,19 @@ class Promotion(models.Model):
         ('subcategory', 'Giảm giá cho danh mục sản phẩm')
     ]
 
-    name = models.CharField(max_length=255)
-    short_description = models.CharField(max_length=255, blank=True, null=True)
-    description = RichTextUploadingField(blank=True, null=True)
-    discount_percent = models.IntegerField()  # Phần trăm giảm giá
-    start_date = models.DateTimeField()      # Ngày bắt đầu
-    end_date = models.DateTimeField()        # Ngày kết thúc
-    is_active = models.BooleanField(default=True)  # Trạng thái chiến dịch
+    name = models.CharField(max_length=255,verbose_name='Tên')
+    short_description = models.CharField(max_length=255, blank=True, null=True,verbose_name='Tóm tắt')
+    description = RichTextUploadingField(blank=True, null=True,verbose_name='Mô tả')
+    discount_percent = models.IntegerField(verbose_name='Phần trăm khuyến mãi')  # Phần trăm giảm giá
+    start_date = models.DateTimeField(verbose_name='Ngày bắt đầu')      # Ngày bắt đầu
+    end_date = models.DateTimeField(verbose_name='Ngày kết thúc')        # Ngày kết thúc
+    is_active = models.BooleanField(default=True,verbose_name='Trạng thái')  # Trạng thái chiến dịch
 
-    promotion_type = models.CharField(max_length=20, choices=PROMOTION_TYPE_CHOICES, default='product')
-    image = models.ImageField(upload_to='promotions/', blank=True, null=True)  
+    promotion_type = models.CharField(max_length=20, choices=PROMOTION_TYPE_CHOICES, default='product',verbose_name='Loại khuyến mãi')
+    image = models.ImageField(upload_to='promotions/', blank=True, null=True,verbose_name='Hình ảnh')  
     
-    subcategories = models.ManyToManyField('book.SubCategory', blank=True, related_name="promotion_subcategories")
-    products = models.ManyToManyField('book.Product', blank=True, related_name="promotion_products")
+    subcategories = models.ManyToManyField('book.SubCategory', blank=True, related_name="promotion_subcategories",verbose_name='Danh mục con')
+    products = models.ManyToManyField('book.Product', blank=True, related_name="promotion_products",verbose_name='Sách')
 
     def __str__(self):
         return f"{self.pk} - {self.name} - {self.discount_percent}% off"
@@ -76,3 +76,4 @@ class Promotion(models.Model):
 
     class Meta:
         db_table = 'promotion'
+        verbose_name_plural = 'Khuyến mãi'

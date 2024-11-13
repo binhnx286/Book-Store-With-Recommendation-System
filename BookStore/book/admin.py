@@ -23,6 +23,12 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name__icontains', 'author__icontains', 'publisher__icontains')
     readonly_fields = ('discount_percent',)
     list_per_page = 20
+
+    def discount_percent(self, obj):
+        if obj.price_origin and obj.new_price < obj.price_origin:
+            return round((1 - (obj.new_price / obj.price_origin)) * 100, 2)
+        return 0
+    discount_percent.short_description = 'Tỷ lệ giảm giá (%)'
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         
