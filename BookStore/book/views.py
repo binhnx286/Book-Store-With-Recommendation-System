@@ -32,7 +32,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     pagination_class = CustomPagination  
     
- 
     
     def get_queryset(self):
         # Lấy giá trị của 'category' và 'subcategory' từ query params
@@ -227,16 +226,6 @@ def import_products_from_csv(file_path):
             try:
                 sub_category = SubCategory.objects.get(id=row['sub_category'])
 
-                # product = Product(
-                #     name=row['name'].strip(),
-                #     description=row['description'],
-                #     image=row['image'],
-                #     quantity=int(row['quantity']),
-                #     price_origin=float(row['price_origin']),
-                #     new_price=float(row['new_price']) if row['new_price'] else None,
-                #     viewed=int(row['view']),
-                #     sub_category=sub_category,
-                # )
                 product = Product(
                     name=row['name'].strip(),
                     description=row['description'],
