@@ -18,15 +18,15 @@ class RatingSerializer(serializers.ModelSerializer):
 class RatingResponseSerializer(serializers.ModelSerializer):
     # Nhúng thông tin email người phản hồi
     user_email = serializers.CharField(source='user.email', read_only=True)
-    
+
     class Meta:
         model = RatingResponse
         fields = ['rating', 'user_email', 'response_text', 'created_at']
-        read_only_fields = ['user']  
-    
+        read_only_fields = ['user', 'rating']  # user và rating sẽ được gán tự động
+
     def validate(self, attrs):
         # Kiểm tra nếu đánh giá đã bị tắt (is_disabled = True)
         rating = attrs.get('rating')
-        if rating.is_disabled:
+        if rating and rating.is_disabled:
             raise serializers.ValidationError("Không thể phản hồi cho đánh giá này vì nó đã bị tắt.")
         return attrs

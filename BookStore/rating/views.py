@@ -13,7 +13,7 @@ from book.serializers import ProductSerializer
 from book.models import Product
 from django.db.models import Avg
 from rest_framework.decorators import action
-
+from rest_framework.exceptions import NotFound
 
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
@@ -60,11 +60,26 @@ class RatingResponseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Lưu phản hồi với người dùng hiện tại
-        serializer.save(user=self.request.user)
+        # Lấy user từ token hiện tại
+        user = self.request.user
+
+        # Lấy rating_id từ URL
+        rating_id = self.kwargs.get('rating_id')
+
+        try:
+            # Tìm đối tượng Rating tương ứng với rating_id
+            rating = Rating.objects.get(id=rating_id)
+        except Rating.DoesNotExist:
+            raise NotFound("Đánh giá không tồn tại")
+        
+        if rating.is_disabled:
+            raise ValidationError("Không thể phản hồi cho đánh giá này vì nó đã bị tắt.")
+        # Lưu rating và user tự động
+        serializer.save(user=user, rating=rating)
 
     def get_queryset(self):
-        rating_id = self.request.query_params.get('rating_id')
+        # Lọc theo rating_id từ URL
+        rating_id = self.kwargs.get('rating_id')
         if rating_id is not None:
             return RatingResponse.objects.filter(rating_id=rating_id)
         return super().get_queryset()
