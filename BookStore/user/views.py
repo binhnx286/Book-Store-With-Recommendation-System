@@ -28,21 +28,16 @@ class RoleViewSet(viewsets.ModelViewSet):
 
 class PasswordResetView(APIView):
     def generate_random_password(self, length=32):
-        
-        characters = string.ascii_letters + string.digits + string.punctuation
+        characters = string.ascii_letters + string.digits
 
-        #  ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt
         password = [
-            random.choice(string.ascii_uppercase),  
-            random.choice(string.ascii_lowercase),  
-            random.choice(string.digits),           
-            random.choice(string.punctuation),      
+            random.choice(string.ascii_uppercase),
+            random.choice(string.ascii_lowercase),
+            random.choice(string.digits),
         ]
         
-        # Điền thêm các ký tự ngẫu nhiên đến đủ độ dài mong muốn
-        password += random.choices(characters, k=length-4)  # Đảm bảo độ dài của mật khẩu
+        password += random.choices(characters, k=length-3)
 
-        # Trộn mật khẩu để đảm bảo tính ngẫu nhiên
         random.shuffle(password)
 
         return ''.join(password)
@@ -76,7 +71,22 @@ class PasswordResetView(APIView):
 
         return Response({"message": "A new password has been sent to your email."}, status=status.HTTP_200_OK)
 
+class CheckPasswordView(APIView):
+    permission_classes = [IsAuthenticated]  # Chỉ cho phép người dùng đã xác thực qua token
 
+    def post(self, request):
+        user = request.user  # Lấy người dùng từ token (đã xác thực)
+        password = request.data.get('password')  # Lấy mật khẩu gửi lên từ request
+
+        # Kiểm tra xem mật khẩu có được gửi lên không
+        if not password:
+            return Response({"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Kiểm tra mật khẩu người dùng gửi lên có đúng không
+        if not check_password(password, user.password):
+            return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Password is correct."}, status=status.HTTP_200_OK)
 
 class AuthToken(APIView):
     def post(self, request, *args, **kwargs):
