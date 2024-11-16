@@ -10,6 +10,12 @@ import jwt
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
+import random
+import string
+from .models import Account
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()  
@@ -19,7 +25,57 @@ class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated, IsAdminRole]
-    
+
+class PasswordResetView(APIView):
+    def generate_random_password(self, length=32):
+        
+        characters = string.ascii_letters + string.digits + string.punctuation
+
+        #  ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt
+        password = [
+            random.choice(string.ascii_uppercase),  
+            random.choice(string.ascii_lowercase),  
+            random.choice(string.digits),           
+            random.choice(string.punctuation),      
+        ]
+        
+        # Điền thêm các ký tự ngẫu nhiên đến đủ độ dài mong muốn
+        password += random.choices(characters, k=length-4)  # Đảm bảo độ dài của mật khẩu
+
+        # Trộn mật khẩu để đảm bảo tính ngẫu nhiên
+        random.shuffle(password)
+
+        return ''.join(password)
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = Account.objects.filter(email=email).first()
+        if not user:
+            return Response({"error": "No user found with this email."}, status=status.HTTP_404_NOT_FOUND)
+        
+        new_password = self.generate_random_password()
+        user.password = make_password(new_password)
+        user.save()
+
+        html_message = render_to_string(
+            'reset_password.html',
+            {'email': email, 'new_password': new_password}
+        )
+
+        send_mail(
+            'Password Reset Notification',
+            f'Your new password is: {new_password}',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+            html_message=html_message
+        )
+
+        return Response({"message": "A new password has been sent to your email."}, status=status.HTTP_200_OK)
+
 
 
 class AuthToken(APIView):

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AccountViewSet, RoleViewSet , AuthToken , ProtectedAPI
+from .views import AccountViewSet, RoleViewSet , AuthToken , ProtectedAPI, PasswordResetView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
@@ -9,6 +9,7 @@ router.register(r'roles', RoleViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
     path('login/', AuthToken.as_view(), name='token_obtain'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('protected/', ProtectedAPI.as_view(), name='protected-api'),
