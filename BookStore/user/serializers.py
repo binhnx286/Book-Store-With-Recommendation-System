@@ -26,6 +26,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "address",
             "status",
             "role",
+            "image",
         ]
         extra_kwargs = {"password": {"write_only": True}}
 

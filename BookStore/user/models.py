@@ -17,6 +17,7 @@ class Account(AbstractUser):
     address = models.CharField(max_length=255, blank=True, null=True,verbose_name='Địa chỉ')
     status = models.BooleanField(default=True,verbose_name='Trạng thái')  
     role = models.ForeignKey('Role', on_delete=models.CASCADE, related_name="accounts",verbose_name='Vai trò')
+    image = models.ImageField(upload_to='profile_images/', blank=True, null=True, default='avatars/default_avatar.jpg',verbose_name='Ảnh đại diện')
     def __str__(self):
         return self.username
 
