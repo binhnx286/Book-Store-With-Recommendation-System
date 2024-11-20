@@ -1,0 +1,2 @@
+hIV4gCUw9Y49*tUVs86K
+curl -u elastic:hIV4gCUw9Y49*tUVs86K "https://localhost:9200" --insecure
