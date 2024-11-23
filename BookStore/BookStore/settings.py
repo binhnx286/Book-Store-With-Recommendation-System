@@ -117,7 +117,7 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 #     }
 # }
 
-dev = True
+dev = False
 if dev:
     DATABASES = {
         'default': {
