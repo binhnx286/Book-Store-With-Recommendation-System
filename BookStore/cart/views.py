@@ -6,11 +6,13 @@ from book.models import Product
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-
+from django.db import transaction
 import uuid
 import requests
 import hmac
 import hashlib
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -22,6 +24,26 @@ class OrderViewSet(viewsets.ModelViewSet):
 class OrderDetailViewSet(viewsets.ModelViewSet):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailSerializer
+    @action(detail=False, methods=['get'], url_path='by-order')
+    def by_order(self, request):
+        # Lấy order_id từ query params
+        order_id = request.query_params.get('order_id')
+        if not order_id:
+            return Response({"error": "order_id is required."}, status=400)
+
+        # Kiểm tra nếu Order tồn tại và chưa bị xóa
+        order = Order.objects.filter(id=order_id, isDelete=False).first()
+        if not order:
+            raise NotFound({"error": f"Order with id {order_id} not found or has been deleted."})
+
+        # Lọc OrderDetail theo order_id và kiểm tra trạng thái isDelete
+        order_details = self.queryset.filter(order_id=order_id, isDelete=False)
+        if not order_details.exists():
+            raise NotFound({"error": f"No order details found for order_id {order_id}."})
+
+        # Serialize dữ liệu nếu tồn tại
+        serializer = self.get_serializer(order_details, many=True)
+        return Response(serializer.data)
 
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
@@ -173,7 +195,7 @@ class CheckoutView(APIView):
             'partnerName': partnerName,
             'storeId': storeId,
             'ipnUrl': ipnUrl,
-            'amount': str(amount),  # Chuyển đổi thành chuỗi
+            'amount': str(amount),  
             'lang': lang,
             'requestType': requestType,
             'redirectUrl': redirectUrl,
@@ -190,10 +212,37 @@ class CheckoutView(APIView):
 
         if response.status_code == 200:
             response_data = response.json()
+            with transaction.atomic():
+                        # Tạo Order
+                        order = Order.objects.create(
+                            user=request.user,
+                            discount=cart.discount,
+                            sub_total=cart.sub_total,
+                            total=amount,
+                            shipping=shipping,
+                        )
+
+                        # Tạo OrderDetail cho từng CartItem
+                        for cart_item in cart.cart_items.filter(is_delete=False):
+                            OrderDetail.objects.create(
+                                order=order,
+                                product=cart_item.product,
+                                quantity=cart_item.quantity,
+                                total=cart_item.total,
+                                discount=cart_item.product.discount if hasattr(cart_item.product, 'discount') else 0,
+                            )
+                            # Đánh dấu CartItem là đã xóa
+                            cart_item.is_delete = True
+                            cart_item.save()
+
+                        # Tính toán lại tổng giỏ hàng
+                        cart.calculate_totals()
+
             return Response({
-                "payUrl": response_data.get('shortLink')  
-            }, status=status.HTTP_200_OK)
-            
+                "message": "Checkout thành công.",
+                "order_id": order.id,
+                "payUrl": response_data.get('shortLink')
+            }, status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Không thể kết nối đến MoMo."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
