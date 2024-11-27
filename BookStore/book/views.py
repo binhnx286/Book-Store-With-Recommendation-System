@@ -13,6 +13,8 @@ from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
+from django.http import JsonResponse
+from .documents import ProductDocument
 
 class CustomPagination(PageNumberPagination):
     page_size = 12  
@@ -219,6 +221,42 @@ class ProductSearchView(APIView):
             "publication_years": list(filtered_publication_years)  
         }, status=status.HTTP_200_OK)
     
+def advanced_search(request):
+    query = request.GET.get('q', None)
+    filters = {
+        'publisher': request.GET.get('publisher', None),
+        'author': request.GET.get('author', None),
+    }
+
+    search = ProductDocument.search()
+
+    # Tìm kiếm chính
+    if query:
+        search = search.query(
+            "multi_match",
+            query=query,
+            fields=['name^3', 'description', 'author', 'publisher']
+        )
+
+    # Áp dụng bộ lọc
+    for field, value in filters.items():
+        if value:
+            search = search.filter("term", **{f"{field}.keyword": value})
+
+    # Thực thi truy vấn
+    results = search.execute()
+
+    # Lấy danh sách ID từ Elasticsearch kết quả
+    product_ids = [result.meta.id for result in results]
+
+    # Truy vấn lại Product model để tạo queryset
+    queryset = Product.objects.filter(id__in=product_ids)
+
+    # Sử dụng serializer
+    serializer = ProductSerializer(queryset, many=True)
+
+    return JsonResponse({'products': serializer.data})
+
 def import_products_from_csv(file_path):
     with open(file_path, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file)

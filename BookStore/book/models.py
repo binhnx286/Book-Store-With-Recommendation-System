@@ -3,7 +3,7 @@ from ckeditor.fields import RichTextField
 from django.utils import timezone
 from pytz import timezone as pytz_timezone
 from promotion.models import Promotion
-
+from django.utils.html import strip_tags
 
 # Product
 class Product(models.Model):
@@ -36,7 +36,11 @@ class Product(models.Model):
         if self.price_origin and self.new_price < self.price_origin:
             return round((1 - (self.new_price / self.price_origin)) * 100, 2)
         return 0
-
+    @property
+    def clean_description(self):
+        """Loại bỏ HTML khỏi trường description."""
+        return strip_tags(self.description) if self.description else ""
+    
     class Meta:
         db_table = 'product'
         verbose_name_plural = 'Sách'

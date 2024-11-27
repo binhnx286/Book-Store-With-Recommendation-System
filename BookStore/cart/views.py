@@ -116,41 +116,6 @@ class CheckoutView(APIView):
         except Order.DoesNotExist:
             return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
         
-    # def post(self, request):
-    #     # Lấy giỏ hàng của người dùng
-    #     cart = Cart.objects.filter(user=request.user).first()
-    #     if not cart or not cart.cart_items.filter(is_delete=False).exists():
-    #         return Response({"error": "Giỏ hàng trống."}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     # Lấy phí vận chuyển từ request, nếu không có thì sử dụng giá trị mặc định
-    #     shipping = request.data.get('shipping', 0)  # Ví dụ: giá trị mặc định là 0
-
-    #     # Tạo Order
-    #     order = Order.objects.create(
-    #         user=request.user,
-    #         discount=cart.discount,
-    #         sub_total=cart.sub_total,
-    #         total=cart.total + shipping,  # Thêm chi phí vận chuyển vào tổng
-    #         shipping=shipping,  # Lưu phí vận chuyển
-    #     )
-
-    #     # Tạo OrderDetail cho mỗi CartItem
-    #     for cart_item in cart.cart_items.filter(is_delete=False):
-    #         OrderDetail.objects.create(
-    #             order=order,
-    #             product=cart_item.product,
-    #             quantity=cart_item.quantity,
-    #             total=cart_item.total,
-    #             discount=cart_item.product.discount if hasattr(cart_item.product, 'discount') else 0,  # Lưu giảm giá nếu có
-    #         )
-    #         # Đánh dấu CartItem là đã xóa
-    #         cart_item.is_delete = True
-    #         cart_item.save()
-
-    #     # Tính toán lại tổng giỏ hàng
-    #     cart.calculate_totals()
-
-    #     return Response({"message": "Checkout thành công.", "order_id": order.id}, status=status.HTTP_201_CREATED)
     def post(self, request):
         # Lấy giỏ hàng của người dùng
         cart = Cart.objects.filter(user=request.user).first()

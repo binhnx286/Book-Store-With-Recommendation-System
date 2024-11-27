@@ -75,12 +75,14 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()  
-
+    image = serializers.SerializerMethodField()
     class Meta:
         model = OrderDetail
-        fields = ['id', 'order', 'product', 'product_name','quantity', 'total']
+        fields = ['id', 'order', 'product', 'product_name','image','quantity', 'total']
     def get_product_name(self, obj):
         return obj.product.name  
+    def get_image(self, obj):
+            return obj.product.image
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()  
 

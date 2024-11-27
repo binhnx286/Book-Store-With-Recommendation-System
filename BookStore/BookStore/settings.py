@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'rating',
     'cart',
     'promotion.apps.PromotionConfig',
+    'django_elasticsearch_dsl',
 ]
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
@@ -104,6 +105,23 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'BookStore.wsgi.application'
+
+#elasticsearch
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'https://localhost:9200',
+        'http_auth': ('elastic', 'hIV4gCUw9Y49*tUVs86K'),
+        'verify_certs': False,  
+    },
+}
+
+# ELASTICSEARCH_DSL = {
+#     'default': {
+#         'hosts': 'https://5107f60a4dc84b90bbd4f7ee7c4634cc.us-central1.gcp.cloud.es.io:443',
+#         'http_auth': ('api_key', 'essu_UnpkM04xbHdUVUpETFcxcWVTMU1ibmRoUTNBNldYTlBVbEJaUkdSUlgza3hRa2t4UTE5d1NHcEZVUT09AAAAAK5szvw='),  # Thay YOUR_API_KEY bằng API Key bạn vừa tạo
+#         'verify_certs': True,
+#     },
+# }
 
 
 
