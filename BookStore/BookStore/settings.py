@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'rating',
     'cart',
     'promotion.apps.PromotionConfig',
-    'django_elasticsearch_dsl',
+    # 'django_elasticsearch_dsl',
 ]
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
@@ -106,14 +106,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BookStore.wsgi.application'
 
-#elasticsearch
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': 'https://localhost:9200',
-        'http_auth': ('elastic', 'hIV4gCUw9Y49*tUVs86K'),
-        'verify_certs': False,  
-    },
-}
+# #elasticsearch
+# ELASTICSEARCH_DSL = {
+#     'default': {
+#         'hosts': 'https://localhost:9200',
+#         'http_auth': ('elastic', 'hIV4gCUw9Y49*tUVs86K'),
+#         'verify_certs': False,  
+#     },
+# }
 
 # ELASTICSEARCH_DSL = {
 #     'default': {
