@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, ImportProductsView ,ProductSearchView,advanced_search
+from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, ImportProductsView ,ProductSearchView,advanced_search,ContentBasedRecommendationView
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
@@ -12,4 +12,5 @@ urlpatterns = [
     path('import-products/', ImportProductsView.as_view(), name='import-products'),
     path('search/', ProductSearchView.as_view(), name='product-search'),
     path('advanced-search/', advanced_search, name='advanced_search'),
+    path('recommendations/<int:pk>/', ContentBasedRecommendationView.as_view(), name='product-recommendations'),
 ]

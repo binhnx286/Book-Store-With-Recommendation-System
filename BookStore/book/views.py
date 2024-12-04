@@ -15,6 +15,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
 from django.http import JsonResponse
 from .documents import ProductDocument
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from bs4 import BeautifulSoup
 
 class CustomPagination(PageNumberPagination):
     page_size = 12  
@@ -316,7 +319,46 @@ class ImportProductsView(APIView):
         return Response({"detail": "Products imported successfully."}, status=status.HTTP_201_CREATED)
 
 
+class ContentBasedRecommendationView(APIView):
+    def get(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+            all_products = list(Product.objects.filter(is_delete=False))
+            
+            # Loại bỏ thẻ HTML khỏi mô tả
+            def clean_html(html_text):
+                return BeautifulSoup(html_text or "", "html.parser").get_text()
+            
+            descriptions = [clean_html(p.description) for p in all_products]
+            vectorizer = TfidfVectorizer()
+            vectors = vectorizer.fit_transform(descriptions)
+            
+            # Tìm độ tương đồng với sản phẩm hiện tại
+            product_vector = vectorizer.transform([clean_html(product.description)])
+            similarity_scores = cosine_similarity(product_vector, vectors).flatten()
+            
+            # Lọc sản phẩm có độ tương đồng lớn hơn 0.6
+            similar_products = [
+                (all_products[int(i)], similarity_scores[int(i)])
+                for i in similarity_scores.argsort()[::-1]
+                if similarity_scores[int(i)] > 0.6 and all_products[int(i)].id != product.id
+            ][:3]  # Giới hạn 3 sản phẩm
+            
+            # Chuẩn bị dữ liệu trả về
+            data = [
+                {
+                    "product": ProductSerializer(product).data,
+                    "similarity_score": round(score, 2)
+                }
+                for product, score in similar_products
+            ]
+            
+            return Response(data, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
+
+        
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
